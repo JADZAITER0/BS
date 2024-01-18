@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+    <title>User Devices</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <style>
+        .hidden {
+          display: none;
+        }
+        
+    </style>
+    <link rel="stylesheet" href="stylesheets\dashboard.css">
+    
+</head>
+<body>
+    <div class="background">
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+    <div class="title"> <h1>User Devices</h1> </div>
+    <ul>
+        <% devices.forEach(device => { %>
+                <button class="device-buttons" onclick="loadDeviceInfo('<%= device %>')">
+                    <%= device %>
+                </button>
+        <% }); %>
+    </ul>
+
+    <button id="addDevice">Link new Device</button>
+
+    <div id="deviceForm" class="hidden">
+        <% if (error) { %>
+            <script>document.getElementById('deviceForm').classList.remove('hidden');</script>
+            <div class="alert">
+                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+                <strong><%= error %></strong>
+              </div>
+        <% } %>
+        <div class="modal-container">
+            <div class="modal-header">
+                <h2>Add New Device</h2>
+                <span class="closebtn" onclick="closeModal()">&times;</span>
+            </div>
+            <div class="modal-content">
+                <form method="post" action="/addDevice">
+                    <label for="deviceId">Device ID:</label>
+                    <input type="text" id="deviceId" name="device_id" required>
+    
+                    <label for="secretKey">Secret Key:</label>
+                    <input type="text" id="secretKey" name="secret_key" required>
+    
+                    <button type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+      </div>
+      
+      <script>
+        document.getElementById('addDevice').addEventListener('click', function() {
+          // Show the form when the button is clicked
+          document.getElementById('deviceForm').classList.remove('hidden');
+        });
+      </script>
+
+    <div id="deviceInfoContainer">
+        <!-- Device information will be dynamically loaded here -->
+    </div>
+
+    <script>
+        function loadDeviceInfo(deviceName) {
+            // Assuming you have a route '/device-info' to fetch information about the device
+            fetch(`/deviceInfo?device=${encodeURIComponent(deviceName)}`)
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('deviceInfoContainer').innerHTML = data;
+                })
+                .catch(error => {
+                    console.error('Error fetching device information:', error);
+                });
+        }
+    </script>
+</body>
+</html>

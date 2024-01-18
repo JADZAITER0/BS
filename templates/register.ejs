@@ -1,0 +1,30 @@
+<!-- views/register.ejs -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="stylesheets\register.css"> <!-- Link to your stylesheet -->
+    <title>Register Page</title>
+</head>
+
+<body>
+    <h1>Register Page</h1>
+    <% if (error) { %>
+        <div class="alert">
+            <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
+            <strong><%= error %></strong>
+          </div>
+    <% } %>
+    <form method="post" action="/register">
+        Enter Username:<br>
+        <input type="text" name="username" value="<%= username? username : '' %>" id="usernameInput" class="<%= error ? 'invalidUsername' : '' %>"><br>
+        Enter Password:<br>
+        <input type="password" name="password" value= "<%= password? password: '' %>"><br><br>
+        <input type="submit" value="Submit">
+    </form>
+</body>
+
+</html>
