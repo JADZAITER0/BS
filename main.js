@@ -7,7 +7,6 @@ var crypto = require('crypto');
 var routes = require('./routes');
 const websocket = require('ws');
 const connection = require('./config/database');
-const json = express.json();
 
 
 // Package documentation - https://www.npmjs.com/package/connect-mongo

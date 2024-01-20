@@ -10,12 +10,12 @@ const connection = mongoose.createConnection(conn, {
 });
 
 // Creates simple schema for a User.  The hash and salt are derived from the user's given password when they register
-const UserSchema = new mongoose.Schema({
-    username: String,
-    hash: String,
-    salt: String,
-    devices:[]
-});
+// const UserSchema = new mongoose.Schema({
+//     username: String,
+//     hash: String,
+//     salt: String,
+//     devices:[]
+// });
 
 
 // Common settings schema
@@ -38,19 +38,21 @@ const ActuatorPresetSchema = new mongoose.Schema({
     heater: actuator_setting
 });
 
-const DeviceSchema = new mongoose.Schema({
-    device_id: String,
-    secret_key: String,
-    actuator_setting: []
-});
+// const DeviceSchema = new mongoose.Schema({
+//     device_id: String,
+//     secret_key: String,
+//     actuator_setting: []
+// });
 
 
 
 
 // const User = connection.model('User', UserSchema);
 // const Devices = connection.model('Device',DeviceSchema);
-// const ActuatorPreset = connection.model('ActuatorPreset',ActuatorPresetSchema); 
+const ActuatorPreset = connection.model('ActuatorPreset',ActuatorPresetSchema); 
 
 // Expose the connection
-module.exports = connection;
-module.exports = mongoose;
+module.exports = {
+    mongoose,
+    connection
+}

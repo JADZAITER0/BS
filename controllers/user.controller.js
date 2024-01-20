@@ -1,28 +1,19 @@
 const passport = require('passport');
 const userService = require('../services/user.service');
-const deviceService = require('../services/device.service');
 const userValidator = require('../validators/user.validator');
 const ERROR = userValidator.ERROR;
 const VALID = userValidator.VALID;
 
-const register = async (req, res) => {
+const register = async (req, res, next) => {
     const username = req.body.username;
     const password = req.body.password;
 
     const usernameCheck = userValidator.isUsernameValid(username);
     const passwordCheck = userValidator.isPasswordValid(password);
 
-    if (usernameCheck !== VALID){
-        //handeled using ajax
-        res.status(404).json({usernameError: usernameCheck});       
-    }
-
-    if (passwordCheck !== VALID){
-        //handeled using ajax   
-        res.status(404).json({passwordError: passwordCheck});
-    }
-
     if (passwordCheck !== VALID || usernameCheck !== VALID){
+        console.log(VALID);
+        res.status(404).json({passwordError: passwordCheck, usernameError: usernameCheck});
         return;
     }
 
@@ -34,11 +25,12 @@ const register = async (req, res) => {
     
         }else{
             userService.createUser(username,password);
-            res.status(200).json({successMessage: "User created succesfully"});
+            res.status(200).redirect('/login');
             return;
         }
 
     } catch (err) {
+        console.error(err);
         res.status(500).json({message: "Internal server error"});
     }
     
@@ -48,7 +40,7 @@ const register = async (req, res) => {
 
 const validUser = async (req, res, next) =>{
     try{
-        if (await !userService.existUser(username)){
+        if (await !userService.existUser(req.body.username)){
             res.status(404).json({errorMessage: "Invalid Username"});
         }
         next();
@@ -58,27 +50,17 @@ const validUser = async (req, res, next) =>{
 };
 
 
-const login = (req, res) => {
-    passport.authenticate('local',{
-        failureRedirect: '/login' ,
+const login = (req, res, next) => {
+    passport.authenticate('local', {
+        failureRedirect: '/login',
         failureFlash: true,
         successRedirect: '/dashboard'
-    });
+    })(req, res, next);
 };
 
-const addDevice = async (req, res) => {
-  
-    const device_id = req.body.device_id;
-    const secret_key = req.body.secret_key;
 
-    if (await !deviceService.areDeviceCredentialsValid(device_id,secret_key)){
-        res.status(404).json({errorMessage: "Invalid Credentials"});
-        return;
-    }else{
-        await userService.linkNewDevice(req.user, device_id);
-        res.status(200).json({successMessage: "Linked Succesfully", device_id: device_id});
-        return;
-        //handeled using ajax
-    }
-
+module.exports = {
+    register,
+    login,
+    validUser
 }

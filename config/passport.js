@@ -1,25 +1,20 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
-const connection = require('./database');
-const User = connection.models.User;
 const validPassword = require('../lib/passwordUtils').validPassword;
 const userService = require('../services/user.service');
+const User = require('../models/user');
 
+const customFields = {
+    usernameField: 'username', 
+    passwordField: 'password'
+}
+    
 
-
-
-/**
- * This method will represent the local startegy used to verify
- * our user
- * @param {name of the user you are verifying} username 
- * @param {*password inputed by the user} password 
- * @param {*returns if the user is authtenicated or not} cb 
- */
 const verify = async (username, password, cb) => {
-
+    console.log('hmmm');
     try{
+        
         const user = await userService.findUserByUsername(username);
-
         if (!user){
             return cb(null,false,{message: 'Invalid Users'});
         }
@@ -38,7 +33,7 @@ const verify = async (username, password, cb) => {
 
 };
 
-passport.use(new LocalStrategy(verify));
+passport.use(new LocalStrategy(customFields,verify));
 
 passport.serializeUser((userId, done) => {
     done(null, userId);
