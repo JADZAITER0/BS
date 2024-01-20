@@ -47,9 +47,10 @@ const DeviceSchema = new mongoose.Schema({
 
 
 
-const User = connection.model('User', UserSchema);
-const Devices = connection.model('Device',DeviceSchema);
-const ActuatorPreset = connection.model('ActuatorPreset',ActuatorPresetSchema); 
+// const User = connection.model('User', UserSchema);
+// const Devices = connection.model('Device',DeviceSchema);
+// const ActuatorPreset = connection.model('ActuatorPreset',ActuatorPresetSchema); 
 
 // Expose the connection
 module.exports = connection;
+module.exports = mongoose;
