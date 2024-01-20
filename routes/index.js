@@ -2,7 +2,7 @@ const router = require('express').Router();
 const passport = require('passport');
 const genPassword= require('../lib/passwordUtils').genPassword;
 const decryptRequest = require('../lib/passwordUtils').decryptRequest;
-const connection = require('../config/database');
+const connection = require('../config/database').connection;
 const { json } = require('express');
 const flash = require('../main').flash;
 //const sockserver = require('../main').sockserver;
@@ -193,7 +193,7 @@ router.post('/addDevice', (req, res, next) =>{
 
  // TODO
  router.post('/register', (req, res, next) => {
- 
+
     if (!req.body.username && !req.body.password){
         req.flash('error', 'Usename & Passowrd Field are Empty');
         res.redirect("register");       

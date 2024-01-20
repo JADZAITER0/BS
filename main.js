@@ -104,8 +104,8 @@ app.use(routes);
  */
 
 // Server listens on http://192.168.0.10:3000
-app.listen(3000,'10.40.1.72',() => {
-    console.log('Server listening on http://192.168.0.8:3000');
+app.listen(3000,'192.168.0.9',() => {
+    console.log('Server listening on http://192.168.0.9:3000');
 });
 
 

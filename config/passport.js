@@ -3,12 +3,9 @@ const LocalStrategy = require('passport-local').Strategy;
 const connection = require('./database');
 const User = connection.models.User;
 const validPassword = require('../lib/passwordUtils').validPassword;
+const userService = require('../services/user.service');
 
 
-const field = {
-    usernameField: 'uname',
-    passwordField: 'pw'
-}
 
 
 /**
@@ -18,25 +15,28 @@ const field = {
  * @param {*password inputed by the user} password 
  * @param {*returns if the user is authtenicated or not} cb 
  */
-const verify = (username, password, cb) => {
-    User.findOne({username:  username})
-        .then((user) => {
-            if (!user) { 
-                return cb(null,false,{message: 'Invalid Users'});
-            }
+const verify = async (username, password, cb) => {
 
-            const isValid = validPassword(password, user.hash, user.salt);
+    try{
+        const user = await userService.findUserByUsername(username);
 
-            if (isValid){
-                return cb(null,user);
-            }else {
-                return cb(null, false,{message: 'Invalid Credentials'});
-            }
-        })
-        .catch((err) => {
-            cb(err);
-        });
-}
+        if (!user){
+            return cb(null,false,{message: 'Invalid Users'});
+        }
+
+        const isValidPassword = validPassword(password, user.hash, user.salt);
+
+        if (isValidPassword){
+            return cb(null,user);
+        }else {
+            return cb(null, false,{message: 'Invalid Credentials'});
+        }
+
+    }catch(err){
+        cb(err);
+    }
+
+};
 
 passport.use(new LocalStrategy(verify));
 
@@ -48,5 +48,5 @@ passport.deserializeUser((userId, done) => {
     User.findById(userId)
         .then((user) => {
             done(null, user);
-        })
+    })
 });
