@@ -8,6 +8,6 @@ const DeviceSchema = new mongoose.Schema({
     actuator_setting: []
 });
 
-const Devices = connection.model('Device',DeviceSchema);
 
+const Devices = connection.models.Devices || connection.model('Device',DeviceSchema);
 module.exports = Devices;

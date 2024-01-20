@@ -9,5 +9,5 @@ const UserSchema = new mongoose.Schema({
 });
 
 
-// const User = connection.model('User', UserSchema);
-// module.exports = User;
+ const User = connection.models.User || connection.model('User', UserSchema);
+ module.exports = User;

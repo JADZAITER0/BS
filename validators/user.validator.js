@@ -10,55 +10,61 @@ const ERROR = {
 
 const VALID = 0;
 
+
 const isUsernameValid = (username) => {
+    const errors = [];
+
     if (!username || typeof username !== 'string') {
-        return ERROR.IS_INVALID;
+        errors.push(ERROR.IS_INVALID);
     }
 
     if (!(/^[a-zA-Z0-9]+$/.test(username))){
-        ERROR.IS_NOT_ALPHANUMERIC;
+        errors.push(ERROR.IS_NOT_ALPHANUMERIC);
     }
 
     if (username.length < 3){
-        ERROR.IS_SHORT;;
+        errors.push(ERROR.IS_SHORT);
     }
-    
-    return VALID;
+
+    return (errors.length != 0 )? errors: VALID;
 }
 
 
 const isPasswordValid = (password) => {
+    const errors = [];
 
     if (password === null || password === undefined) {
         return false;
     }
 
     if (!/[A-Z]/.test(password)) {
-        return ERROR.NO_UPPERCASE;
+        errors.push(ERROR.NO_UPPERCASE);
     }
 
     if (!/[a-z]/.test(password)) {
-        return ERROR.NO_LOWERCASE;
+        errors.push(ERROR.NO_LOWERCASE);
     }
 
     if (!/\d/.test(password)) {
-        return ERROR.NO_DIGIT;
+        errors.push(ERROR.NO_DIGIT);
     }
 
     if (password.length < 8) {
-        return ERROR.IS_SHORT;
+        errors.push(ERROR.IS_SHORT);
     }
 
     if (!/[!@#$%^&*()_+{}\[\]:;<>,.?~\\/-]/.test(password)) {
-        return ERROR.NO_SPECIAL_CHAR;
+        errors.push(ERROR.NO_SPECIAL_CHAR);
     }
 
-    return VALID;
+    return (errors.length != 0 )? errors: VALID;
+
 }
 
 
 module.exports = {
     ERROR,
+    VALID,
     isPasswordValid,
     isUsernameValid
 }

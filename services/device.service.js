@@ -25,7 +25,7 @@ const findDeviceById = async (device_id) => {
 
 const areDeviceCredentialsValid = async(device_id, secret_key) => {
     try{
-        const existDevice = await Device.findOne({ device_id: device_id, secret_key: secret_key});
+        const existDevice = await Device.findOne({ device_id: device_id, secret_key: secret_key}).exec();
         return existDevice;
     }catch(err){
         throw(err);

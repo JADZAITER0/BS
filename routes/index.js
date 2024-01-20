@@ -1,15 +1,13 @@
 const router = require('express').Router();
 const passport = require('passport');
-const genPassword= require('../lib/passwordUtils').genPassword;
 const decryptRequest = require('../lib/passwordUtils').decryptRequest;
 const connection = require('../config/database').connection;
 const { json } = require('express');
 const flash = require('../main').flash;
-//const sockserver = require('../main').sockserver;
-const User = connection.models.User;
-const Device = connection.models.Device;
-
-
+const User = require('../models/user');
+const Device = require('../models/device');
+const userController = require('../controllers/user.controller');
+const deviceController = require('../controllers/device.controller');
 
 function generateRandomString(length) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -161,79 +159,18 @@ router.post('/api/v1/hummidity', (req, res, next) =>{
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //Website interface routes and post 
-router.post('/login', passport.authenticate('local',{
-    failureRedirect: '/login' ,
-    failureFlash: true,
-    successRedirect: '/dashboard'
-    })
-);
+router.post('/login', userController.login);
 
 
 //
 
 //TODO
-router.post('/addDevice', (req, res, next) =>{
-    console.log(req.body.device_id);
-    console.log(req.body.secret_key);
-    Device.findOne({device_id: req.body.device_id,
-         secret_key: req.body.secret_key}).then((device) =>{
-            if (!device){
-                req.flash('error','Invalid Credentials');
-                res.redirect('/dashboard')
-            }else{
-                req.flash('success','Device Added');
-                req.user.devices.push(req.body.device_id);
-                req.user.save().then();
-                res.redirect('/dashboard')
-            }
-         });
-});
+router.post('/addDevice', deviceController.addDevice);
 
 
 
  // TODO
- router.post('/register', (req, res, next) => {
-
-    if (!req.body.username && !req.body.password){
-        req.flash('error', 'Usename & Passowrd Field are Empty');
-        res.redirect("register");       
-    }else if(!req.body.username){
-        req.flash('error', 'Usename Field is Empty');
-        req.flash('password', req.body.password);
-        res.redirect("register"); 
-    }else if (!req.body.password){
-        req.flash('error', 'Password Field is Empty');
-        req.flash('username', req.body.username);
-        res.redirect("register"); 
-    }else{
-        User.findOne({username:  req.body.username})
-        .then((exist_user) => {
-                if (exist_user){
-                    req.flash('error', 'Username already exists');
-                    res.redirect("register");
-                }else{
-                    const saltHash = genPassword(req.body.password);
-                    const salt = saltHash.salt;
-                    const hash = saltHash.genHash;
-
-                    const newUser= new User({
-                        username: req.body.username,
-                        hash: hash,
-                        salt: salt
-                    });
-
-                    newUser.save().then((user) => {
-                        
-                    });
-                    res.redirect('login');
-                }
-                
-        });
-    }
-    
-    
- });
-
+ router.post('/register', userController.register);
 
  /**
  * -------------- GET ROUTES ----------------

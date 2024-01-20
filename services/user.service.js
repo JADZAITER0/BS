@@ -27,7 +27,7 @@ const createUser = async(username, password) => {
 
 const existUser = async(username) => {
     try {
-        const existUser = await User.findOne({ username: username });
+        const existUser = await User.findOne({ username: username }).exec();
         return existUser !== null;
     }catch(err){
         throw(err);
@@ -35,9 +35,10 @@ const existUser = async(username) => {
 };
 
 
-const findUserByUsername = async(username) =>{
+const findUserByUsername = async(username1) =>{
     try {
-        const existUser = await User.findOne({ username: username });
+        const existUser = await User.findOne({ username: username1 }).exec();
+        console.log(existUser);
         return existUser;
     }catch(err){
         throw(err);
