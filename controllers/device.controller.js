@@ -1,5 +1,7 @@
+const { json } = require('express');
 const deviceService = require('../services/device.service');
 const userService = require('../services/user.service');
+const PACKET_TYPE = require('../constants/packetType.constants').PACKET_TYPE;
 
 const addDevice = async (req, res, next) => {
     if (!req.isAuthenticated()){
@@ -24,6 +26,50 @@ const addDevice = async (req, res, next) => {
     }
 };
 
+const decryptData = async (req, res, next, packetType) => {
+    const device = await deviceService.findDeviceById(req.query.device);
+    console.log(device);
+    if (device){
+
+        try {
+            let jsonData = deviceService.decryptPacket(device.device_id , req.body.encryptedData);
+            
+
+            switch (packetType) {
+                case PACKET_TYPE.TEMPRATURE:
+                    //logic for saving temprature packet to the databaase along with checking if they are valid
+                    // validity include time, value if null or undifined
+                    res.status(200).send("Added Temprature succfully")
+                    break;
+                case PACKET_TYPE.HUMIDITY:
+                    //logic for saving hummidity packet to the databaase along with checking if they are valid
+                    // validity include time, value if null or undifined
+                    res.status(200).send("Added Humidity succfully")
+                    break;
+    
+                case PACKET_TYPE.MOISTURE :
+                    //logic for saving moisture packet to the databaase along with checking if they are valid
+                    // validity include time, value if null or undifined
+                    res.status(200).send("Added Moisture succfully")
+                    break;
+                
+                case PACKET_TYPE.LIGHT:
+                    //logic for saving light packet to the databaase along with checking if they are valid
+                    // validity include time, value if null or undifined 
+                    res.status(200).send("Added Light data succefully")
+                    break;
+                default:
+    
+                    break;
+            }
+        } catch (error) {
+            res.status(400).send('Bad Request');
+        } 
+        
+    }
+}
+
 module.exports = {
-    addDevice
+    addDevice,
+    decryptData
 };

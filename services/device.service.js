@@ -16,7 +16,7 @@ const decryptRequest = require('../lib/passwordUtils').decryptRequest;
 
 const findDeviceById = async (device_id) => {
     try{
-        const existDevice = await Device.findOne({ device_id: device_id});
+        const existDevice = await Device.findOne({ device_id: device_id}).exec();
         return existDevice;
     }catch(err){
         throw(err);
@@ -32,35 +32,39 @@ const areDeviceCredentialsValid = async(device_id, secret_key) => {
     }    
 }
 
-const decryptPacket = async (device_id, encryptedData, packetType) =>  {
+const decryptPacket = async (device_id, encryptedData) =>  {
     try {
         const device = await findDeviceById(device_id);
+        
         if (!device){
            return 0;
         }else{
-            let decryptedData = decryptRequest(device.secret_key, req.body.encryptedData);
+            
+            let decryptedData = decryptRequest(device.secret_key, encryptedData);
             let jsonData;
-
+            
             try{
                 jsonData = JSON.parse(decryptedData);
                 const deviceId = jsonData.deviceId;
+                
 
                 if (deviceId === device_id){
                     //packet type logic
                     //time logic to check that packet is new and not forged
-                    return decryptedData;
+                    console.log(jsonData);
+                    return jsonData;
                 }else{
                     //replace this with constants name
                     //indicates error type
                     //will be handeled in the controller;
-                    return 1;
+                    throw(new Error('forged packet'));
                 }
             }catch(err){
-                return 2;
+                throw(new Error('forged packet'));
             }
         }
     } catch (err) {
-        return 2;
+       throw(new Error('forged packet'));
     }
 }
 
@@ -73,5 +77,7 @@ const decryptPacket = async (device_id, encryptedData, packetType) =>  {
 module.exports = {
     // existDevice,
     areDeviceCredentialsValid,
+    decryptPacket,
+    findDeviceById
     // isSecretKeyValid,
 }
