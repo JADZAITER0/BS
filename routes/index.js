@@ -8,6 +8,7 @@ const User = require('../models/user');
 const Device = require('../models/device');
 const userController = require('../controllers/user.controller');
 const deviceController = require('../controllers/device.controller');
+const PACKET_TYPE = require('../constants/packetType.constants').PACKET_TYPE;
 
 function generateRandomString(length) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -38,120 +39,11 @@ function generateRandomString(length) {
 //---------------------------------------------
 //API routes for handeling uploaded data
 //---------------------------------------------
-router.post('/api/v1/temprature', (req,res,next) =>{
-    const device_id = req.query.device;
-    //the req.bod.encryptedData will be present in the esp32 post request to the server
-    console.log(req.body.encryptedData)
-
-
-    //finding device with the same post request query
-    Device.findOne({device_id: device_id}).then((device) => {
-        console.log(device);
-        
-        if (!device){
-            //if device does not exist return 404 status
-            res.status(400).send('Invalid device Id');
-        }else{
-            //if device exist, decrypt the data using it shared secret key between server and client
-            //then parse the reposnse as JSON
-            let decryptedData = decryptRequest(device.secret_key, req.body.encryptedData);
-            console.log(decryptedData);
-            let jsonData;
-            try{
-                //parsing the decrypted data to get the content back
-                //as JSON
-                jsonData = JSON.parse(decryptedData);
-                const deviceId = jsonData.deviceId;
-                const temperature = jsonData.temp;
-
-                if (!temperature){
-                    res.status(400).send('Forged packed (JSON not correct)');
-                    return;
-                }
-
-                //if the device_id in the POST body is the same as in the initial POST request
-                //that means that the data was not altered so now we can add the data to the database
-                if (deviceId === device_id){
-                    res.send('Data Decrypted Successfully');
-                    console.log('Decrypted Data:');
-                    console.log('Device ID:', deviceId);
-                    console.log('Temperature:', temperature);
-                }else{
-
-                    //if the device_id in the POST body is not the same as in the initial POST request
-                    //that means that the POST body has been altered thus we don't add it to the database
-                    res.send('Forged Packet Detected');
-                }
-            } catch (error) {
-                //if there was an error parsing the BODY to json that means also that the request
-                //has been altered
-                console.log('Error parsing decrypted data as JSON:');
-                res.status(400).send('Forged packed (JSON not correct)');
-            };
-
-        }
-    });
-
-    
-    
-});
+router.post('/api/v1/temprature', (req, res, next) => deviceController.decryptData(req, res, next, PACKET_TYPE.TEMPRATURE));
 
 //we made this a standalone route even though the temprature and hummidity are recieved togehter
 //this will be helpfull if changes where made to the sensor and the database
-router.post('/api/v1/hummidity', (req, res, next) =>{
-    const device_id = req.query.device;
-
-    //finding device with the same post request query
-    Device.findOne({device_id: device_id}).then((device) => {
-        console.log(device);
-        
-        if (!device){
-            //if device does not exist return 404 status
-            res.status(400).send('Invalid device Id');
-        }else{
-            //if device exist, decrypt the data using it shared secret key between server and client
-            //then parse the reposnse as JSON
-            let decryptedData = decryptRequest(device.secret_key, req.body.encryptedData);
-            console.log(decryptedData);
-            let jsonData;
-            try{
-                //parsing the decrypted data to get the content back
-                //as JSON
-                jsonData = JSON.parse(decryptedData);
-                const deviceId = jsonData.deviceId;
-                const hummidity = jsonData.hum;
-
-                if (!hummidity){
-                    res.status(400).send('Forged packed (JSON not correct)');
-                    return;
-                }
-
-                //if the device_id in the POST body is the same as in the initial POST request
-                //that means that the data was not altered so now we can add the data to the database
-                if (deviceId === device_id){
-                    res.send('Data Decrypted Successfully');
-                    console.log('Decrypted Data:');
-                    console.log('Device ID:', deviceId);
-                    console.log('Hummidity:', hummidity);
-                    //logic for hummidity databse
-
-                }else{
-
-                    //if the device_id in the POST body is not the same as in the initial POST request
-                    //that means that the POST body has been altered thus we don't add it to the database
-                    res.send('Forged Packet Detected');
-                }
-            } catch (error) {
-                //if there was an error parsing the BODY to json that means also that the request
-                //has been altered
-                console.log('Error parsing decrypted data as JSON:');
-                res.status(400).send('Forged packed (JSON not correct)');
-            };
-
-        }
-    });
-
-});
+router.post('/api/v1/hummidity', (req, res, next) => deviceController.decryptData(req, res, next, PACKET_TYPE.HUMIDITY));
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
