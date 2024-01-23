@@ -39,7 +39,7 @@ function generateRandomString(length) {
 //---------------------------------------------
 //API routes for handeling uploaded data
 //---------------------------------------------
-router.post('/api/v1/temprature', (req, res, next) => deviceController.decryptData(req, res, next, PACKET_TYPE.TEMPRATURE));
+router.post('/api/v1/temprature/:id/', (req, res, next) => deviceController.decryptData(req, res, next, PACKET_TYPE.TEMPRATURE));
 
 //we made this a standalone route even though the temprature and hummidity are recieved togehter
 //this will be helpfull if changes where made to the sensor and the database

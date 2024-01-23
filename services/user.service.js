@@ -57,7 +57,14 @@ const linkNewDevice = async(user,device_id) => {
 
 
 const isDeviceAllreadyLinked = async(user, device_id) => {
-    return user.devices.includes(device_id);
+    try {
+        //const user = await User.findOne({username: username.username}).exec();
+        console.log(user.devices)
+        return (user.devices.indexOf(device_id) !== -1);
+    } catch (error) {
+        console.log(error);
+        return false;
+    }
 }
 
 

@@ -57,14 +57,14 @@ const decryptPacket = async (device_id, encryptedData) =>  {
                     //replace this with constants name
                     //indicates error type
                     //will be handeled in the controller;
-                    throw(new Error('forged packet'));
+                    throw new Error('forged packet');
                 }
             }catch(err){
-                throw(new Error('forged packet'));
+                throw err;
             }
         }
     } catch (err) {
-       throw(new Error('forged packet'));
+       throw err;
     }
 }
 
