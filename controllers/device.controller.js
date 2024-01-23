@@ -8,15 +8,17 @@ const addDevice = async (req, res, next) => {
         res.status(500).json({ errorMessage: "BLABLABAL" });
         return;
     }
+    
 
     const device_id = req.body.device_id;
     const secret_key = req.body.secret_key;
-    console.log(secret_key);
+    
 
     if (!(await deviceService.areDeviceCredentialsValid(device_id, secret_key))) {
-        res.status(404).json({ errorMessage: "Invalid Credentials" });
+        res.status(404).json({ errorMessage: "Invalid Credentials"});
         return;
-    } else if (userService.isDeviceAllreadyLinked(device_id, req.user)){
+    } else if (userService.isDeviceAllreadyLinked(req.user, device_id)){
+        console.log("Hi");
         res.status(404).json({ errorMessage: "Device allready linked" });
         return;
     } else {
@@ -27,12 +29,14 @@ const addDevice = async (req, res, next) => {
 };
 
 const decryptData = async (req, res, next, packetType) => {
-    const device = await deviceService.findDeviceById(req.query.device);
+    const device = await deviceService.findDeviceById(req.params.id);
+    console.log(req.params.id);
     console.log(device);
     if (device){
-
+       
         try {
-            let jsonData = deviceService.decryptPacket(device.device_id , req.body.encryptedData);
+            
+            let jsonData = await deviceService.decryptPacket(device.device_id , req.body.encryptedData);
             
 
             switch (packetType) {

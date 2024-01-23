@@ -16,6 +16,7 @@ const isUsernameValid = (username) => {
 
     if (!username || typeof username !== 'string') {
         errors.push(ERROR.IS_INVALID);
+        return;
     }
 
     if (!(/^[a-zA-Z0-9]+$/.test(username))){
@@ -34,7 +35,7 @@ const isPasswordValid = (password) => {
     const errors = [];
 
     if (password === null || password === undefined) {
-        return false;
+        return errors.push(ERROR.IS_INVALID);;
     }
 
     if (!/[A-Z]/.test(password)) {

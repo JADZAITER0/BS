@@ -36,7 +36,6 @@ app.use(express.urlencoded({extended: true}));
 
 
 
-
 /**
  * -------------- SESSION SETUP ----------------
  */
@@ -103,7 +102,7 @@ app.use(routes);
  */
 
 // Server listens on http://192.168.0.10:3000
-app.listen(3000,'192.168.0.9',() => {
+app.listen(3000,'127.0.0.2',() => {
     console.log('Server listening on http://192.168.0.9:3000');
 });
 
