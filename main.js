@@ -23,6 +23,17 @@ require('dotenv').config();
 
 // Create the Express application
 var app = express();
+const expressWs = require('express-ws');
+const WebSocket = require('ws');
+const { Console } = require('console');
+const wsInstance = expressWs(app);
+const aWss = wsInstance.getWss('/');
+
+const deviceConnections = new Map();
+
+
+
+
 //const sockserver = new websocket("http://192.168.0.10:443" );
 
 //for ejs templates
@@ -96,16 +107,56 @@ app.use(passport.session());
 app.use(routes);
 
 
+app.post('/:id/settings', (req, res) => {
+    const clientToken = req.params.id;
+    const setting= req.body.setting;
+  
+    // Check if the device with the given token is connected
+    if (deviceConnections.has(clientToken)) {
+      const ws = deviceConnections.get(clientToken);
+  
+      // Send the setting change to the connected device
+      ws.send(JSON.stringify({
+        type: 'uwu',
+      }));
+  
+      res.status(200).json({ message: 'Setting change request processed successfully.' });
+    } else {
+      res.status(404).json({ error: 'Device not found.' });
+    }
+});
+
+app.ws('/:id/', function (ws, req) {
+    // Add the new connection to the list
+    console.log(req.socket.remoteAddress);
+    aWss.clients.add(ws);
+    deviceConnections.set(req.params.id, ws);
+    
+    ws.on('message', function (msg) {
+        console.log(msg);
+
+        
+    });
+c
+    ws.on('close', function () {
+        console.log("Closed");
+        aWss.clients.delete(ws);
+        deviceConnections.delete(req.params.id);
+    });
+
+
+});
+
 
 /**
  * -------------- SERVER ----------------
  */
 
-// Server listens on http://192.168.0.10:3000
-app.listen(3000,'127.0.0.2',() => {
-    console.log('Server listening on http://192.168.0.9:3000');
+// Server listens on http://192.168.1.5:3000
+app.listen(3002,'127.0.0.1',() => {
+    console.log('Server listening on http://127.0.0.1:3002');
 });
 
 
 module.exports.flash = flash;
-//module.exports.sockserver = sockserver;
+//module.exports.sockserver = sockserver;    
