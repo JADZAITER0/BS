@@ -55,12 +55,23 @@ const linkNewDevice = async(user,device_id) => {
     }
 };
 
+const removeDevice = async(user,device_id) => {
+    try{
+        const updatedUser = await User.findOneAndUpdate(
+            { _id: user._id },
+            { $pull: { devices: device_id } },
+            { new: true }
+        );
+        return user;
+    }catch(err){
+        throw(err);
+    }
+};
+
 
 const isDeviceAllreadyLinked = async(user, device_id) => {
     try {
-        //const user = await User.findOne({username: username.username}).exec();
-        console.log(user.devices)
-        return (user.devices.indexOf(device_id) !== -1);
+        return (user.devices.indexOf(device_id) != -1);
     } catch (error) {
         console.log(error);
         return false;
@@ -78,8 +89,9 @@ module.exports = {
     createUser,
     existUser,
     linkNewDevice,
+    removeDevice,
     isDeviceAllreadyLinked,
-    findUserByUsername
+    findUserByUsername,
 }
 
 

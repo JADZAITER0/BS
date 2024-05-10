@@ -5,7 +5,8 @@ const ERROR = {
     NO_DIGIT: 4,
     NO_LOWERCASE: 5,
     NO_UPPERCASE: 6,
-    NO_SPECIAL_CHAR: 7
+    NO_SPECIAL_CHAR: 7,
+    USER_ALLREADY_EXIST: 8
 }
 
 const VALID = 0;

@@ -1,3 +1,4 @@
+const { decryptData } = require('../controllers/device.controller');
 const Device = require('../models/device');
 const genPassword= require('../lib/passwordUtils').genPassword;
 const validPassword = require('../lib/passwordUtils').validPassword;
@@ -23,6 +24,29 @@ const findDeviceById = async (device_id) => {
     }    
 }
 
+
+const addUserToLinkedUsers = async (device_id, user) => {
+    //when we call this method we are sure the device is found
+    const device = await findDeviceById(device_id);
+    device.user_linked.push(user);
+    await device.save();
+    return device;
+}
+
+
+const removeUserFromLinkedUsers = async (device_id, user) => {
+    try{
+        const updatedDevice = await Device.findOneAndUpdate(
+            { device_id: device_id },
+            { $pull: { user_linked: user } },
+            { new: true }
+        );
+        return updatedDevice;
+    }catch(err){
+        throw(err);
+    }
+}
+
 const areDeviceCredentialsValid = async(device_id, secret_key) => {
     try{
         const existDevice = await Device.findOne({ device_id: device_id, secret_key: secret_key}).exec();
@@ -39,14 +63,12 @@ const decryptPacket = async (device_id, encryptedData) =>  {
         if (!device){
            return 0;
         }else{
-            
             let decryptedData = decryptRequest(device.secret_key, encryptedData);
             let jsonData;
-            
             try{
                 jsonData = JSON.parse(decryptedData);
                 const deviceId = jsonData.deviceId;
-                
+                console.log(deviceId === device_id);
 
                 if (deviceId === device_id){
                     //packet type logic
@@ -78,6 +100,7 @@ module.exports = {
     // existDevice,
     areDeviceCredentialsValid,
     decryptPacket,
-    findDeviceById
-    // isSecretKeyValid,
+    findDeviceById,
+    addUserToLinkedUsers,
+    removeUserFromLinkedUsers
 }

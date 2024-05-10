@@ -1,80 +1,261 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-bs-theme="light">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-    <title>User Devices</title>
-    <link rel="preconnect" href="https://fonts.gstatic.com">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
-    <style>
-        .hidden {
-          display: none;
+  <title>AIgRICULTURE - Smart Agriculture IoT</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!-- Bootstrap CSS v5.3.2 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+        crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+  <style>
+    html,
+        body {
+        height: 100%;
         }
-    </style>
-    <link rel="stylesheet" href="stylesheets\dashboard.css">
+
+        .form-signin {
+        max-width: 330px;
+        padding: 1rem;
+        z-index: 1;
+        }
+
+        .form-signin .form-floating:focus-within {
+        z-index: 2;
+        }
+
+        .form-signin input[type="email"] {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        }
+
+        .form-signin input[type="password"] {
+        margin-bottom: 10px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        }
+        .navbar-brand {
+        font-size: 1.8rem;
+        }
+
+        .navbar-nav .nav-link {
+        font-size: 1.2rem;
+        }
+
+        .error-alert{
+          animation: fadeIn 0.3s ease-in; 
+        }
+
+        @keyframes fadeIn {  
+          from {  
+              opacity:0;  
+          }  
+
+          to {  
+              opacity:1;  
+          }  
+        }
+  </style>
 </head>
+
 <body>
-    <div class="background">
-        <div class="shape"></div>
-        <div class="shape"></div>
-    </div>
-    <div class="title"> <h1>User Devices</h1> </div>
-    <ul id="device-buttons-list">
-        <% devices.forEach(device => { %>
-            <button class="device-buttons" onclick="loadDeviceInfo('<%= device %>')">
-                <%= device %>
-            </button>
-        <% }); %>
-    </ul>
+  <header>
+    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+      <div class="container-fluid">
+        <a href="#" class="navbar-brand"><strong>AIgRICULTURE</strong></a>
 
-    <button id="addDevice">Link new Device</button>
-
-    <div id="deviceForm" class="hidden">
-        <% if (error) { %>
-            <script>document.getElementById('deviceForm').classList.remove('hidden');</script>
-            <div class="alert">
-                <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span> 
-                <strong><%= error %></strong>
-            </div>
-        <% } %>
-        <div class="modal-container">
-            <div class="modal-header">
-                <h2>Add New Device</h2>
-                <span class="closebtn" onclick="closeModal()">&times;</span>
-            </div>
-            <div class="modal-content">
-                <form id="addDeviceForm">
-                    <label for="deviceId">Device ID:</label>
-                    <input type="text" id="deviceId" name="device_id" required>
-    
-                    <label for="secretKey">Secret Key:</label>
-                    <input type="text" id="secretKey" name="secret_key" required>
-    
-                    <button type="button" onclick="submitDeviceForm();">Submit</button>
-                </form>
-            </div>
+        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-label="Expand Navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse justify-content-center" id="nav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a href="/" class="nav-link" >Home</a>
+            </li>
+            <li class="nav-item">
+              <a href="/login" class="nav-link">Login</a>
+            </li>
+            <li class="nav-item">
+              <a href="/register" class="nav-link active" aria-current="page">Register</a>
+            </li>
+          </ul>
         </div>
-    </div>
-    
-    <script>
-    document.getElementById('addDevice').addEventListener('click', function() {
-        // Show the form when the button is clicked
-        document.getElementById('deviceForm').classList.remove('hidden');
-    });
+      </div>
+    </nav>
+  </header>
 
-    function submitDeviceForm() {
+  <main>
+    <table class="table table-striped ">
+        <thead>
+            <tr>
+              <th scope="col">#</th>
+              <th scope="col">Device_Id</th>
+              <th scope="col">Status</th>
+              <th scope="col">Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% devices.forEach( (device, i) => { %>
+                <tr id="<%= device %>">
+                    <th onclick="loadDeviceInfo('<%= device %>')" scope="row"><%= i + 1 %> </device></th>
+                    <td  onclick="loadDeviceInfo('<%= device %>')"><%= device %></td>
+                    <td  onclick="loadDeviceInfo('<%= device %>')"><span class="badge bg-success rounded-pill d-inline">Active</span></td>
+                    <td ><button type="button" class="btn btn-danger " onclick="removeDevice('<%= device %>')"><i class="bi bi-dash"></i></button></td>
+                </tr>
+           <% })%>
+           <tr id="tbody">
+            <th scope="row"> </device></th>
+            <td></td>
+            <td></td>
+            <td><button type="button" class="btn btn-success " data-bs-toggle="modal" data-bs-target="#exampleModal" ><i class="bi bi-plus"></i></button></td>
+           </tr>
+        </tbody>
+    </table>  
+    <!-- Button trigger modal -->
+  
+  <!-- Modal -->
+  <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="exampleModalLabel"><strong>Link Device</strong></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form method="post"  id ="addDevice-form">
+                <div id="error-div" class=" container ">
+                   
+                </div>
+                <h3 class="h3 mb-3 fw-normal ">Device Id</h3>
+              <div class="form-floating p-1 ">
+                <input type="input" class="form-control" id="floatingInput" placeholder="Device Id" name="device_id">
+                <label for="floatingInput">Device Id</label>
+              </div>
+              <h3 class="h3 mb-3 fw-normal ">Secret Key</h3>
+              <div class="form-floating p-1 ">
+                <input type="password" class="form-control" id="floatingPassword" placeholder="Secret Key" name="secret_key">
+                <label for="floatingPassword">Secret Key</label>
+              </div>
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-success " onclick="addDevice();">Submit</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </main>
+
+  <footer>
+    <!-- Your footer content goes here -->
+  </footer>
+
+  <script>
+   
+    document.addEventListener('DOMContentLoaded', () => {
+        document.getElementById('register-form').addEventListener('submit', () => {
+            let username = document.getElementById('floatingInput').value;
+            let password = document.getElementById('floatingPassword').value;
+            
+            event.preventDefault();
+
+            fetch('/register', 
+            {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({username: username , password: password })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const errorDiv = document.getElementById('error-div');
+                errorDiv.innerHTML = '';
+                var errorStr = "";
+               
+                if (data.usernameError != 0){
+                    data.usernameError.forEach(error => {
+                      console.log(error);
+                    switch (error) {
+                        case 1:
+                            errorStr += "<li>Missing Credentials</li>";
+                            break;
+                        case 2:
+                            errorStr += "<li>Username Should not Include Special Charachters</li>";
+                            break;
+                        case 3:
+                            errorStr += "<li>Username is Short</li>";
+                            break;
+                        case 8:
+                            errorStr += "<li>Username Allready Exist</li>";
+                            break;
+                        default:
+                            break;
+                    }
+                    });
+                    errorDiv.insertAdjacentHTML('beforeend' ,`<div class="alert alert-danger small fade show " id="error" role="alert">
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        <strong>${errorStr}</strong>
+                                    </div>`);
+                    const errorMsg = document.getElementById('error').classList.add('error-alert');
+                }
+                errorStr = "";
+                
+                if (data.passwordError != 0){
+                    data.passwordError.forEach(error => {
+                        switch (error) {
+                        case 1:
+                            errorStr += "<li>Missing Credentials</li>";
+                            break;
+                        case 3:
+                            errorStr += "<li>Password is Short</li>";
+                            break;
+                        case 4:
+                            errorStr += "<li>Password Should Include a Digit</li>";
+                            break;
+                        case 5:
+                            errorStr += "<li>Password Should Contain Atleast a Lower Case Letter</li>";
+                            break;
+                        case 6:
+                            errorStr += "<li>Password Should Contain Atleast an Upper Case Letter</li>";
+                            break;
+                        case 7:
+                            errorStr += "<li>Password Should Contain Atleast a Special Charachter</li>";
+                            break;
+                        default:
+                            break;
+                        }
+                    });
+                    
+                    errorDiv.insertAdjacentHTML('beforeend' ,`<div class="alert alert-danger small fade show" id="passError" role="alert">
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        <strong>${errorStr}</strong>
+                                    </div>`);
+                    const errorMsg = document.getElementById('passError').classList.add('error-alert');
+                }
+                
+            }).catch(error => {
+                console.error('Error:', error);
+            });
+        });
+    });
+  </script>
+
+  <script>
+    function addDevice() {
         // Assuming you have a route '/addDevice' to handle the form submission
-        const formData = new FormData(document.getElementById('addDeviceForm'));
+        const formData = new FormData(document.getElementById('addDevice-form'));
 
         const device_id = formData.get('device_id');
         const secret_key = formData.get('secret_key');
-
-        const formData1 = new FormData();
-        formData1.append('device_id', device_id);
-        formData1.append('secret_key', secret_key);
-
-        alert(device_id+" s:"+secret_key);
         
         fetch('/addDevice', {
             method: 'POST',
@@ -88,53 +269,93 @@
         .then(data => {
             // Handle the response as needed
             if (data.successMessage) {
-                alert(data.successMessage);
-                const buttonUl = document.getElementById('device-buttons-list');
-                
-                // Add a new button dynamically
-                const newButton = document.createElement('button');
-                newButton.textContent = device_id;
-                newButton.addEventListener('click', loadDeviceInfo(device_id+""));
-
-                // Append the new button to the body or another container
-                buttonUl.appendChild(newButton);
+                const tbody = document.getElementById('tbody');
+                tbody.insertAdjacentHTML("beforebegin",`<tr id="${device_id}">
+                    <th onclick="loadDeviceInfo('${device_id}')" scope="row">5</device></th>
+                    <td onclick="loadDeviceInfo('${device_id}')">${device_id}</td>
+                    <td onclick="loadDeviceInfo('${device_id}')"><span class="badge bg-success rounded-pill d-inline">Active</span></td>
+                    <td><button type="button" class="btn btn-danger" onclick="removeDevice('${device_id}')"><i class="bi bi-dash"></i></button></td>
+                </tr>`);
             } else if (data.errorMessage) {
                 alert(data.errorMessage);
             }
 
+            const tbodyRows = document.querySelectorAll('tbody tr[id]:not(:last-child)');
+                tbodyRows.forEach((row, index) => {
+                  const th = row.querySelector('th');
+                  th.textContent = (index + 1).toString();
+            });
+
             // Close the modal after submission
-            closeModal();
+            
         })
         .catch(error => {
             console.error('Error submitting device form:', error);
         });
-}
-
-
-    function closeModal() {
-        // Hide the form when the modal is closed
-        document.getElementById('deviceForm').classList.add('hidden');
     }
-    </script>
 
-    <div id="deviceInfoContainer">
-        <!-- Device information will be dynamically loaded here -->
-    </div>
+  </script>
 
-    <script>
-        function loadDeviceInfo(deviceName) {
-            // Assuming you have a route '/deviceInfo' to fetch information about the device
-            fetch(`/deviceInfo?device=${encodeURIComponent(deviceName)}`)
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('deviceInfoContainer').innerHTML = data;
-                })
-                .catch(error => {
-                    console.error('Error fetching device information:', error);
+<script>
+    function removeDevice(device_id) { 
+        fetch('/removeDevice', {
+            method: 'POST',
+            body: JSON.stringify({device_id}),
+            headers: {
+                "Accept": "application/json",
+                "Content-Type": "application/json",
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            // Handle the response as needed
+            if (data.successMessage) {
+                alert(device_id);
+                const tbody = document.getElementById(`${device_id}`);
+                alert(tbody);
+                tbody.remove();
+
+                const tbodyRows = document.querySelectorAll('tbody tr[id]:not(:last-child)');
+                tbodyRows.forEach((row, index) => {
+                  const th = row.querySelector('th');
+                  th.textContent = (index + 1).toString();
                 });
-        }
-    </script>
+              
 
-    
+            } else if (data.errorMessage) {
+                alert(data.errorMessage);
+            }
+
+            // Close the modatbl after submission
+            
+        })
+        .catch(error => {
+            console.error('Error submitting device form:', error);
+        });
+    }
+
+  </script>
+
+  <script>
+    function loadDeviceInfo(deviceName) {
+        // Assuming you have a route '/deviceInfo' to fetch information about the device
+        window.location.href = `/${encodeURIComponent(deviceName)}/deviceInfo/`;
+        return;
+        fetch(`/deviceInfo/${encodeURIComponent(deviceName)}`)
+            .then(response => response.text())
+            .then(data => {
+                alert(data);
+            })
+            .catch(error => {
+                console.error('Error fetching device information:', error);
+            });
+    }
+  </script>
+
+  <!-- Bootstrap JavaScript Libraries -->
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+" crossorigin="anonymous"></script>
 </body>
+
 </html>
