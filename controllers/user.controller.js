@@ -12,7 +12,7 @@ const register = async (req, res, next) => {
     const passwordCheck = userValidator.isPasswordValid(password);
 
     if (passwordCheck !== VALID || usernameCheck !== VALID){
-        console.log(VALID);
+        console.log("hi");
         res.status(404).json({passwordError: passwordCheck, usernameError: usernameCheck});
         return;
     }
@@ -20,16 +20,19 @@ const register = async (req, res, next) => {
     try {
 
         if (await userService.existUser(username)){
-            res.status(404).json({errorMessage: "User allready exist"});
+            console.log("hi1");
+            res.status(404).json({usernameError: [ERROR.USER_ALLREADY_EXIST]});
             return;
     
         }else{
+            console.log("hi2");
             userService.createUser(username,password);
-            res.status(200).redirect('/login');
+            res.status(200).json({success:1});
             return;
         }
 
     } catch (err) {
+        console.log("hi3");
         console.error(err);
         res.status(500).json({message: "Internal server error"});
     }
@@ -50,6 +53,7 @@ const validUser = async (req, res, next) =>{
 };
 
 
+
 const login = (req, res, next) => {
     passport.authenticate('local', {
         failureRedirect: '/login',
@@ -62,5 +66,5 @@ const login = (req, res, next) => {
 module.exports = {
     register,
     login,
-    validUser
+    validUser,
 }

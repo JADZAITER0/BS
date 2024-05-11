@@ -46,7 +46,20 @@
         .navbar-nav .nav-link {
         font-size: 1.2rem;
         }
-        
+
+        .error-alert{
+          animation: fadeIn 0.3s ease-in; 
+        }
+
+        @keyframes fadeIn {  
+          from {  
+              opacity:0;  
+          }  
+
+          to {  
+              opacity:1;  
+          }  
+        }
   </style>
 </head>
 
@@ -79,7 +92,7 @@
   <main>
     <main class="form-signin  m-auto ">
         <form method="post"  id ="register-form">
-            <div id="error-div" class="container ">
+            <div id="error-div" class=" container ">
                
             </div>
     
@@ -99,7 +112,7 @@
                     <image xlink:href="https://www.svgrepo.com/show/398509/tractor.svg" width="70%" height="70%" />
                 </svg>
             </div>
-            <h1 class="h3 mb-3 fw-normal "><strong>Sign In</strong></h1>
+            <h1 class="h3 mb-3 fw-normal "><strong>Sign Up</strong></h1>
           <div class="form-floating">
             <input type="input" class="form-control" id="floatingInput" placeholder="name@example.com" name="username">
             <label for="floatingInput">Username</label>
@@ -137,7 +150,13 @@
                 },
                 body: JSON.stringify({username: username , password: password })
             })
-            .then(response => response.json())
+            .then(response => {
+              if (response.status == 200){
+                window.location.href = '/login';
+              }else{
+                return response.json();
+              }
+            })
             .then(data => {
                 const errorDiv = document.getElementById('error-div');
                 errorDiv.innerHTML = '';
@@ -145,6 +164,7 @@
                
                 if (data.usernameError != 0){
                     data.usernameError.forEach(error => {
+                      console.log(error);
                     switch (error) {
                         case 1:
                             errorStr += "<li>Missing Credentials</li>";
@@ -155,14 +175,18 @@
                         case 3:
                             errorStr += "<li>Username is Short</li>";
                             break;
+                        case 8:
+                            errorStr += "<li>Username Allready Exist</li>";
+                            break;
                         default:
                             break;
                     }
                     });
-                    errorDiv.insertAdjacentHTML('beforeend' ,`<div class="alert alert-danger small fade show " role="alert">
+                    errorDiv.insertAdjacentHTML('beforeend' ,`<div class="alert alert-danger small fade show " id="error" role="alert">
                                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                         <strong>${errorStr}</strong>
                                     </div>`);
+                    const errorMsg = document.getElementById('error').classList.add('error-alert');
                 }
                 errorStr = "";
                 
@@ -192,10 +216,11 @@
                         }
                     });
                     
-                    errorDiv.insertAdjacentHTML('beforeend' ,`<div class="alert alert-danger small fade show" role="alert">
+                    errorDiv.insertAdjacentHTML('beforeend' ,`<div class="alert alert-danger small fade show" id="passError" role="alert">
                                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                                         <strong>${errorStr}</strong>
                                     </div>`);
+                    const errorMsg = document.getElementById('passError').classList.add('error-alert');
                 }
                 
             }).catch(error => {

@@ -3,7 +3,8 @@ const PACKET_TYPE = {
     HUMIDITY: 1,
     LIGHT: 2,
     MOISTURE: 3,
-    CO2: 4
+    CO2: 4,
+    CARBON: 5
 }
 
 

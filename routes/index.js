@@ -43,7 +43,25 @@ router.post('/api/v1/temprature/:id/', (req, res, next) => deviceController.decr
 
 //we made this a standalone route even though the temprature and hummidity are recieved togehter
 //this will be helpfull if changes where made to the sensor and the database
-router.post('/api/v1/hummidity', (req, res, next) => deviceController.decryptData(req, res, next, PACKET_TYPE.HUMIDITY));
+router.post('/api/v1/hummidity/:id/', (req, res, next) => deviceController.decryptData(req, res, next, PACKET_TYPE.HUMIDITY));
+
+router.post('/api/v1/light/:id/', (req, res, next) => deviceController.decryptData(req, res, next, PACKET_TYPE.LIGHT));
+
+router.post('/api/v1/moisture/:id/', (req, res, next) => deviceController.decryptData(req, res, next, PACKET_TYPE.MOISTURE));
+
+router.post('/api/v1/carbon/:id/', (req, res, next) => deviceController.decryptData(req, res, next, PACKET_TYPE.CO2));
+
+router.get('/api/v1/deviceData/temprature/:id/', (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.TEMPRATURE));
+
+router.get('/api/v1/deviceData/hummidity/:id/', (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.HUMIDITY));
+
+router.get('/api/v1/deviceData/light/:id/', (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.LIGHT));
+
+router.get('/api/v1/deviceData/moisture/:id/', (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.MOISTURE));
+
+router.get('/api/v1/deviceData/carbon/:id/', (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.CO2));
+
+
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -60,7 +78,7 @@ router.post('/login', userController.login);
 router.post('/addDevice', deviceController.addDevice);
 
 
-
+router.post('/removeDevice', deviceController.removeDevice);
  // TODO
  router.post('/register', userController.register);
 
@@ -71,20 +89,36 @@ router.post('/addDevice', deviceController.addDevice);
 
 router.get('/', (req, res, next) => {
 
-
-      //generateDevices
         // for (let index = 0; index < 15; index++) {
         //     const newDevice= new Device({
         //         device_id: generateRandomString(16),
         //         secret_key: generateRandomString(32),
-        //         actuator_setting: []
+        //         actuator_setting: [],
+        //         user_linked: [],
+        //         sensor_setting:  {temprature: 2,
+        //             hummidity:2,
+        //             moisture:2,
+        //             carbon_dioxide:2,
+        //             light:0,
+        //          },
+        //         sensor_data: {temprature:[],
+        //             hummidity: [],
+        //             moisture: [],
+        //             carbon_dioxide: [],
+        //             light: [],
+        //             pressure: [],
+        //             }
         //     });
 
-        //     newDevice.save().then((device) => {
-        //         console.log("Inserted a new device \n");
-        //     });
-            
-        // }
+        //     //save the new device to the database
+        //     newDevice.save()
+        //         .then(device => {
+        //             console.log(device);
+        //         })
+        //         .catch(err => {
+        //             console.log(err);
+        //         });
+        //     }
     res.render('../templates/home');
 });
 
@@ -128,22 +162,7 @@ router.get('/dashboard', (req, res, next) => {
     }
 });
 
-router.get('/deviceInfo', (req, res, next) =>{
-    if (req.isAuthenticated()){
-        const deviceId = req.query.device;
-        if (!deviceId){
-            res.send('<h1>You are not unauthorized to see this device info</h1><p>');
-        }else{
-            if (req.user.devices.includes(deviceId)){
-                res.send('congrats');
-            }else{
-                res.send('<h1>You dont own this device dummy to see this device info</h1><p>');
-            }
-
-            
-        }
-    }
-});
+router.get('/:id/deviceInfo',deviceController.getDeviceInfo);
 
 // Visiting this route logs the user out
 router.get('/logout', (req, res, next) => {
