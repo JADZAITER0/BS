@@ -4,7 +4,7 @@ const PACKET_TYPE = {
     LIGHT: 2,
     MOISTURE: 3,
     CO2: 4,
-    CARBON: 5
+    PRESSURE: 5
 }
 
 

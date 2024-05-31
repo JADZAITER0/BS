@@ -1,6 +1,6 @@
 const WebSocket = require('ws');
 
-const ws = new WebSocket('ws://192.168.0.2:3000');
+const ws = new WebSocket('ws://192.168.110.68:3002/1bYh0LFvHfeFso5s');
 const crypto = require('crypto');
 
 
@@ -47,3 +47,5 @@ ws.on('close', function close() {
 ws.on('error', function error(error) {
     console.error('WebSocket error:', error);
 });
+
+

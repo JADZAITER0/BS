@@ -9,6 +9,16 @@ const Device = require('../models/device');
 const userController = require('../controllers/user.controller');
 const deviceController = require('../controllers/device.controller');
 const PACKET_TYPE = require('../constants/packetType.constants').PACKET_TYPE;
+const Websocket = require('ws');
+const expressWs = require('express-ws');
+const wsInstance = expressWs(router);
+const aWss = wsInstance.getWss('/');
+const deviceConnections = new Map();
+
+
+
+
+
 
 function generateRandomString(length) {
     const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -51,17 +61,21 @@ router.post('/api/v1/moisture/:id/', (req, res, next) => deviceController.decryp
 
 router.post('/api/v1/carbon/:id/', (req, res, next) => deviceController.decryptData(req, res, next, PACKET_TYPE.CO2));
 
-router.get('/api/v1/deviceData/temprature/:id/', (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.TEMPRATURE));
+router.post('/api/v1/pressure/:id/', (req, res, next) => deviceController.decryptData(req, res, next, PACKET_TYPE.PRESSURE));
 
-router.get('/api/v1/deviceData/hummidity/:id/', (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.HUMIDITY));
+router.get('/api/v1/deviceData/:id/userCount',deviceController.getDeviceUserCount);
 
-router.get('/api/v1/deviceData/light/:id/', (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.LIGHT));
+router.get('/api/v1/deviceData/temprature/:id/',userController.isAuthenticated, (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.TEMPRATURE));
 
-router.get('/api/v1/deviceData/moisture/:id/', (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.MOISTURE));
+router.get('/api/v1/deviceData/hummidity/:id/', userController.isAuthenticated, (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.HUMIDITY));
 
-router.get('/api/v1/deviceData/carbon/:id/', (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.CO2));
+router.get('/api/v1/deviceData/light/:id/', userController.isAuthenticated ,(req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.LIGHT));
 
+router.get('/api/v1/deviceData/moisture/:id/', userController.isAuthenticated, (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.MOISTURE));
 
+router.get('/api/v1/deviceData/carbon/:id/', userController.isAuthenticated, (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.CO2));
+
+router.get('/api/v1/deviceData/pressure/:id/', userController.isAuthenticated, (req, res, next) => deviceController.getData(req, res, next, PACKET_TYPE.PRESSURE));
 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -75,10 +89,10 @@ router.post('/login', userController.login);
 //
 
 //TODO
-router.post('/addDevice', deviceController.addDevice);
+router.post('/addDevice',userController.isAuthenticated, deviceController.addDevice);
 
 
-router.post('/removeDevice', deviceController.removeDevice);
+router.post('/removeDevice',userController.isAuthenticated ,deviceController.removeDevice);
  // TODO
  router.post('/register', userController.register);
 
@@ -93,13 +107,14 @@ router.get('/', (req, res, next) => {
         //     const newDevice= new Device({
         //         device_id: generateRandomString(16),
         //         secret_key: generateRandomString(32),
-        //         actuator_setting: [],
+        //         actuator_setting: {},
         //         user_linked: [],
-        //         sensor_setting:  {temprature: 2,
-        //             hummidity:2,
-        //             moisture:2,
-        //             carbon_dioxide:2,
+        //         sensor_setting:  {temprature: 4,
+        //             hummidity:4,
+        //             moisture:4,
+        //             carbon_dioxide:4,
         //             light:0,
+        //             pressure:4
         //          },
         //         sensor_data: {temprature:[],
         //             hummidity: [],
@@ -119,7 +134,7 @@ router.get('/', (req, res, next) => {
         //             console.log(err);
         //         });
         //     }
-    res.render('../templates/home');
+    res.render('../templates/home',{ auth: req.isAuthenticated()});
 });
 
 
@@ -150,7 +165,7 @@ router.get('/register', (req, res, next) => {
  * 
  * Also, look up what behaviour express session has without a maxage set
  */
-router.get('/dashboard', (req, res, next) => {
+router.get('/dashboard',userController.isAuthenticated ,(req, res, next) => {
     
     // This is how you check if a user is authenticated and protect a route.  You could turn this into a custom middleware to make it less redundant
     if (req.isAuthenticated()) {
@@ -162,6 +177,50 @@ router.get('/dashboard', (req, res, next) => {
     }
 });
 
+router.get('/:id/devicesocket',userController.isAuthenticated, (req, res, next) => {
+    deviceToken = req.params.id;
+    if (deviceConnections.has(deviceToken)) {
+        const ws = deviceConnections.get(deviceToken);
+
+        // Send the setting change to the connected device
+        ws.send(JSON.stringify({
+            type: 'data'
+        }));
+
+        res.status(200).json({ message: 'Setting change request processed successfully.' });
+    } else {
+        res.status(404).json({ error: 'Device not found.' });
+    }
+}); 
+
+
+router.post('/:id/settings',userController.isAuthenticated, deviceController.updateSensorSetting, (req,res,next) => {
+    deviceToken = req.params.id;
+    if (deviceConnections.has(deviceToken)) {
+        const ws = deviceConnections.get(deviceToken);
+
+        // Send the setting change to the connected device
+        ws.send(JSON.stringify({
+            type: 'uwu',
+        }));
+
+        res.status(200).json({ message: 'Setting change request processed successfully.' });
+    } else {
+        res.status(404).json({ error: 'Device not found.' });
+    }
+});
+;
+router.post('/:id/settingsActuator',userController.isAuthenticated, deviceController.updateActuatorSetting);
+
+
+router.post('/:id/sensorSettings',deviceController.getSensorSetting);
+
+router.post('/:id/actuatorSettings',deviceController.getActuatorSetting);
+
+
+
+//TODO
+//authentication including checking if the user is authenticated and has the device connected
 router.get('/:id/deviceInfo',deviceController.getDeviceInfo);
 
 // Visiting this route logs the user out
@@ -170,9 +229,9 @@ router.get('/logout', (req, res, next) => {
         if (err) {
             return next(err);
         }
-        res.redirect('/dashboard');
+        res.redirect('/');
     });
-    res.redirect('/dashboard');
+    res.render('../templates/notAuthenticated');
 });
 
 router.get('/login-success', (req, res, next) => {
@@ -182,5 +241,23 @@ router.get('/login-success', (req, res, next) => {
 router.get('/login-failure', (req, res, next) => {
     res.send('You entered the wrong password.');
 });
+
+
+router.ws('/:id/', function (ws, req) {
+    // Add the new connection to the list
+    console.log(req.socket.remoteAddress);
+    aWss.clients.add(ws);
+    deviceConnections.set(req.params.id, ws);
+    
+    ws.on('message', function (msg) {
+        console.log(msg);   
+    });
+    ws.on('close', function () {
+        console.log("Closed");
+        aWss.clients.delete(ws);
+        deviceConnections.delete(req.params.id);
+    });
+});
+
 
 module.exports = router;

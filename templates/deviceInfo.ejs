@@ -1,280 +1,1110 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <!-- Include Bootstrap CSS -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Include Chart.js -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous" />
+    <link rel="stylesheet" href="/assets/font/bootstrap-icons.min.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <title>Chart.js with Bootstrap</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/date-fns/1.30.1/date_fns.js"></script>
+    <script
+        src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+
+    <title>Device data</title>
+    <style>
+        html,
+        body {
+            height: 100%;
+        }
+
+        .navbar-brand {
+            font-size: 1.8rem;
+        }
+
+        .navbar-nav .nav-link {
+            font-size: 1.2rem;
+        }
+
+        .error-alert {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+
+            to {
+                opacity: 1;
+            }
+        }
+    </style>
 </head>
+
 <body>
     <header>
-    <nav class="navbar navbar-expand-md navbar-dark bg-dark">
-      <div class="container">
-        <a href="#" class="navbar-brand"><strong>AIgRICULTURE</strong></a>
+        <nav class="navbar navbar-expand-md navbar-dark bg-dark">
+            <div class="container-fluid">
+                <a href="/" class="navbar-brand"><strong>AIgRICULTURE</strong></a>
 
-        <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-label="Expand Navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse justify-content-center" id="nav">
-          <ul class="navbar-nav">
-            <li class="nav-item">
-              <a href="#" class="nav-link active" aria-current="page">Home</a>
-            </li>
-            <li class="nav-item">
-              <a href="/login" class="nav-link">Login</a>
-            </li>
-            <li class="nav-item">
-              <a href="/register" class="nav-link">Register</a>
-            </li>
-          </ul>
-        </div>
-      </div>
-    </nav>
-  </header>
-    <div class="container-fluid">
-        <div class="row bg-primary align-baseline ">
-            <div class="col-12 mb-3">
-                <div class = "container-fluid">
-                    <div class="btn-group" role="group" aria-label="Chart switcher">
-                        <button id="temperatureButton" type="button" class="btn btn-primary p-1  ">Temprature</button>
-                        <button id="moistureButton" type="button" class="btn btn-primary p-1">Moisture</button>
-                        <button id="humidityButton" type="button" class="btn btn-primary p-1">Hummidity</button>
-                        <button id="lightButton" type="button" class="btn btn-primary p-1">Light</button>
-                        <button id="co2Button" type="button" class="btn btn-primary p-1">Co2</button>
-                        <button type="button" class="btn btn-primary p-1">Setting</button>
-                        <button type="button" class="btn btn-primary p-1">ASAA</button>
-                    </div>
+                <button class="navbar-toggler" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav"
+                    aria-label="Expand Navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse justify-content-center justify-content-center" id="nav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item">
+                            <a href="/dashboard" class="nav-link" aria-current="page">Dashboard</a>
+                        </li>
+                    </ul>
                 </div>
-                
-            </div>
-        </div>
-        <div class="row">
-            <div class="col-sm-4 col-lg-7">
-                <!-- Canvas for the chart -->
-                <div style="position: relative; height:80vh; width:100%">
-                    <canvas id="myChart"></canvas>
+                <div class="collapse navbar-collapse justify-content-end  " id="nav">
+                    <ul class="navbar-nav">
+                        <li class="nav-item ">
+                            <a href="/logout" class="nav-link">Logout</a>
+                        </li>
+                    </ul>
                 </div>
             </div>
-            <div class="col-lg-2 ">
-                <!-- Div cards -->
-                <div class="card p-1 mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Temprature</h5>
-                        <div class="card-img">
-                            <div class="feature-icon d-inline-flex align-items-center justify-content-start  text-bg-primary bg-gradient fs-2 mb-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" class="bi bi-thermometer-half" viewBox="0 0 16 16">
-                                  <path d="M9.5 12.5a1.5 1.5 0 1 1-2-1.415V6.5a.5.5 0 0 1 1 0v4.585a1.5 1.5 0 0 1 1 1.415"/>
-                                  <path d="M5.5 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0zM8 1a1.5 1.5 0 0 0-1.5 1.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0l-.166-.15V2.5A1.5 1.5 0 0 0 8 1"/>
-                                </svg>
-                                <div class="card-text align-content-around justify-content-center m-1 ">55 c</div>
-                              </div>
-                              
-                            </div>
-                    </div>
-                </div>
-                <div class="card p-1 mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Hummidity</h5>
-                        <div class="card-img ">
-                            <div class="feature-icon d-inline-flex align-items-center justify-content-start  text-bg-primary bg-gradient fs-2 mb-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" class="bi bi-droplet" viewBox="0 0 16 16">
-                                    <path fill-rule="evenodd" d="M7.21.8C7.69.295 8 0 8 0q.164.544.371 1.038c.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8m.413 1.021A31 31 0 0 0 5.794 3.99c-.726.95-1.436 2.008-1.96 3.07C3.304 8.133 3 9.138 3 10a5 5 0 0 0 10 0c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z"/>
-                                    <path fill-rule="evenodd" d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87z"/>
-                                  </svg>
-                                <div class="card-text align-content-around justify-content-center  m-1 ">55 c</div>
-                              </div>
+        </nav>
+    </header>
+    <main>
+        <div class="container-fluid">
+
+            <div class="row bg-primary justify-content-start">
+                <div class="col">
+                    <div class="btn-group d-block d-sm-none">
+                        <button class="btn btn-primary dropdown-toggle" type="button" data-bs-toggle="collapse"
+                            data-bs-target="#buttonGroupCollapse" aria-expanded="false"
+                            aria-controls="buttonGroupCollapse">
+                            Chart switcher
+                        </button>
+                        <div class="collapse" id="buttonGroupCollapse">
+                            <a id="temperatureButton" class="btn btn-primary d-block mb-1" href="#">Temperature</a>
+                            <a id="moistureButton" class="btn btn-primary d-block mb-1" href="#">Moisture</a>
+                            <a id="humidityButton" class="btn btn-primary d-block mb-1" href="#">Humidity</a>
+                            <a id="lightButton" class="btn btn-primary d-block mb-1" href="#">Light</a>
+                            <a id="co2Button" class="btn btn-primary d-block mb-1" href="#">CO2</a>
+                            <a id="pressButton" class="btn btn-primary d-block mb-1" href="#">Pressure</a>
+                            <a class="btn btn-primary d-block mb-1" href="#" data-bs-toggle="modal"
+                                data-bs-target="#samplingModal">Sensor Setting</a>
+                            <a class="btn btn-primary d-block" href="#" data-bs-toggle="modal"
+                                data-bs-target="#actuatorModal">Actuator Settings</a>
                         </div>
                     </div>
+
+                    <div class="btn-group d-none d-sm-block">
+                        <a id="temperatureButton1" class="btn btn-primary" type="button">Temperature</a>
+                        <a id="moistureButton1" class="btn btn-primary" type="button">Moisture</a>
+                        <a id="humidityButton1" class="btn btn-primary" type="button">Humidity</a>
+                        <a id="lightButton1" class="btn btn-primary" type="button">Light</a>
+                        <a id="co2Button1" class="btn btn-primary" type="button">CO2</a>
+                        <a id="pressButton1" class="btn btn-primary" href="#">Pressure</a>
+                        <a class="btn btn-primary" type="button" data-bs-toggle="modal"
+                            data-bs-target="#samplingModal">Sensor Setting</a>
+                        <a class="btn btn-primary" type="button" data-bs-toggle="modal"
+                            data-bs-target="#actuatorModal">Actuator Settings</a>
+                    </div>
+
                 </div>
-               
-                <!-- Repeat the above div for the remaining 3 cards -->
             </div>
-            <div class="col-lg-2 ">
-                <div class="card p-1 mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Light</h5>
-                        <div class="card-img ">
-                            <div class="feature-icon d-inline-flex align-items-center justify-content-start  text-bg-primary bg-gradient fs-2 mb-3">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em" fill="currentColor" class="bi bi-sun" viewBox="0 0 16 16">
-                                    <path d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708"/>
-                                  </svg>
-                                <div class="card-text align-content-around justify-content-center m-1 ">55 c</div>
-                            </div>
-                        </div>
+            <div class="row">
+                <div class="col">
+                    <!-- Canvas for the chart -->
+                    <div class="chart-container" style="position: relative; height: 400px; width: 100%">
+                        <canvas id="myChart"></canvas>
                     </div>
                 </div>
-                <div class="card p-1 mb-3">
-                    <div class="card-body">
-                        <h5 class="card-title">Co2</h5>
-                        <div class="card-img ">
-                            <div class="feature-icon d-inline-flex align-items-center justify-content-start  text-bg-primary bg-gradient fs-2 mb-3">
-                                <svg fill="#000000" width="1.5em" height="1.5em" fill="currentColor" class="bi bi-sun" viewBox="0 0 512 512"  xmlns="http://www.w3.org/2000/svg"  >
-<g>
-	<g>
-		<path d="M210.842,281.421c-1.92-2.918-4.796-4.873-8.243-5.623l-3.098-0.35c-2.202,0-4.301,0.546-6.4,1.698
-			c-3.226,1.877-5.427,5.077-6.101,8.798c-2.022,9.301-5.726,16.051-10.948,20.028c-4.625,3.473-11.025,5.222-18.953,5.222
-			c-10.453,0-18.5-3.499-24.602-10.65c-6.878-8.098-10.377-20.147-10.377-35.849c0-15.3,3.524-27.298,10.351-35.524
-			c6.349-7.398,14.404-10.999,24.627-10.999c7.902,0,14.404,1.749,19.328,5.222c5.274,3.652,8.55,9.148,10.001,16.529
-			c0.853,5.171,3.627,8.004,5.623,9.301c2.048,1.451,4.429,2.227,6.878,2.227l2.876-0.35c3.354-0.777,6.076-2.603,7.979-5.402
-			c1.954-2.927,2.697-6.246,2.15-9.924c-2.304-12.228-7.723-22.178-16.222-29.602c-9.728-8.328-22.699-12.552-38.596-12.552
-			c-18.022,0-32.802,6.724-43.878,19.977c-11.051,13.047-16.649,30.225-16.649,51.098c0,21.325,5.598,38.622,16.623,51.379
-			c11.051,13.073,25.822,19.703,43.904,19.703c15.872,0,28.877-4.574,38.596-13.525c8.149-7.373,13.798-17.451,16.828-30.003
-			C213.692,287.172,212.216,283.529,210.842,281.421z"/>
-	</g>
-</g>
-<g>
-	<g>
-		<path d="M335.369,216.073c-11.341-14.899-27.469-22.451-47.915-22.451c-20.548,0-36.727,7.552-48.128,22.528
-			c-9.549,12.8-14.379,29.15-14.379,48.546c0,19.396,4.821,35.703,14.404,48.427c11.375,15.027,27.554,22.647,48.102,22.647
-			c20.446,0,36.574-7.629,47.898-22.596c9.796-12.723,14.771-29.022,14.771-48.478S345.173,228.873,335.369,216.073z
-			 M315.477,298.197c-6.4,8.849-15.573,13.15-28.023,13.15c-12.527,0-21.7-4.301-27.998-13.099
-			c-5.922-8.303-8.951-19.575-8.951-33.553c0-14.071,3.004-25.353,8.951-33.579c6.298-8.798,15.471-13.099,27.998-13.099
-			c12.45,0,21.623,4.301,28.049,13.15c6.025,8.277,9.071,19.55,9.071,33.527C324.574,278.554,321.502,289.826,315.477,298.197z"/>
-	</g>
-</g>
-<g>
-	<g>
-		<path d="M426.991,356.932c-2.458-2.449-5.76-3.797-9.335-3.797h-31.198c2.022-2.372,6.076-5.999,14.404-11.204l2.048-1.451
-			c8.875-5.649,14.498-9.975,17.621-13.602c5.504-6.246,8.277-14.302,8.277-23.902c0-9.096-3.098-16.947-9.199-23.296
-			c-13.551-14.003-39.672-13.901-52.873,0.077c-5.999,6.298-9.054,14.123-9.054,23.228v3.123c0,4.753,1.954,7.902,3.9,10.052
-			c5.052,5.001,14.199,4.676,18.551,0.324c2.799-2.552,4.352-6.101,4.352-10.001v-3.499c0-3.021,1.024-4.471,1.997-5.504
-			c1.024-1.101,2.722-2.372,6.699-2.372c4.053,0,5.854,1.323,6.929,2.449c0.896,0.947,1.929,2.398,1.929,5.427
-			c0,3.524-0.947,6.221-2.901,8.422c-1.229,1.348-4.702,4.471-14.148,10.325c-9.6,5.777-16.853,12.297-21.598,19.422
-			c-5.376,8.124-8.073,17.672-7.979,28.399l0.077,9.523h62.174c3.746,0,7.202-1.527,9.327-3.9c2.423-2.449,3.746-5.649,3.746-9.071
-			C430.737,362.607,429.414,359.356,426.991,356.932z"/>
-	</g>
-</g>
-<g>
-	<g>
-		<path d="M426.624,199.851C402.099,119.501,327.671,64,243.2,64c-80.853,0-152.747,50.603-180.326,126.379
-			C23.424,216.653,0,259.977,0,307.2C0,384.828,63.172,448,140.8,448c15.65,0,31.403-2.773,46.822-8.303
-			c44.203,13.474,91.571,10.402,133.547-8.397C340.471,442.249,362.052,448,384,448c70.579,0,128-57.421,128-128
-			C512,265.353,477.978,217.899,426.624,199.851z M384,422.4c-19.396,0-38.477-5.649-55.151-16.375l-6.076-3.9l-6.502,3.174
-			c-38.997,19.2-83.652,22.323-124.996,8.721l-4.378-1.451l-4.275,1.673c-13.824,5.402-27.904,8.149-41.822,8.149
-			C77.278,422.4,25.6,370.722,25.6,307.2c0-39.825,20.429-76.297,54.647-97.579l3.9-2.423l1.476-4.352
-			C108.501,135.1,171.827,89.6,243.2,89.6c75.247,0,141.303,50.825,160.623,123.597l1.852,6.972l6.929,2.022
-			C456.747,235.128,486.4,274.423,486.4,320C486.4,376.474,440.474,422.4,384,422.4z"/>
-	</g>
-</g>
-</svg>
-                                <div class="card-text align-content-end justify-content-end m-1 ">55 c</div>
+
+            </div>
+            <div class="row">
+                <div class="col-lg-6 ">
+                    <!-- Div cards -->
+                    <div class="card p-1 mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Temprature</h5>
+                            <div class="card-img">
+                                <div
+                                    class="feature-icon d-inline-flex align-items-center justify-content-start bg-gradient fs-2 mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em"
+                                        fill="currentColor" class="bi bi-thermometer-half" viewBox="0 0 16 16">
+                                        <path
+                                            d="M9.5 12.5a1.5 1.5 0 1 1-2-1.415V6.5a.5.5 0 0 1 1 0v4.585a1.5 1.5 0 0 1 1 1.415" />
+                                        <path
+                                            d="M5.5 2.5a2.5 2.5 0 0 1 5 0v7.55a3.5 3.5 0 1 1-5 0zM8 1a1.5 1.5 0 0 0-1.5 1.5v7.987l-.167.15a2.5 2.5 0 1 0 3.333 0l-.166-.15V2.5A1.5 1.5 0 0 0 8 1" />
+                                    </svg>
+                                    <div id="temp_text" class="card-text align-content-around justify-content-center m-1 ">-</div>
+                                </div>
+
                             </div>
                         </div>
                     </div>
+                    <div class="card p-1 mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Hummidity</h5>
+                            <div class="card-img ">
+                                <div
+                                    class="feature-icon d-inline-flex align-items-center justify-content-start bg-gradient fs-2 mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em"
+                                        fill="currentColor" class="bi bi-droplet" viewBox="0 0 16 16">
+                                        <path fill-rule="evenodd"
+                                            d="M7.21.8C7.69.295 8 0 8 0q.164.544.371 1.038c.812 1.946 2.073 3.35 3.197 4.6C12.878 7.096 14 8.345 14 10a6 6 0 0 1-12 0C2 6.668 5.58 2.517 7.21.8m.413 1.021A31 31 0 0 0 5.794 3.99c-.726.95-1.436 2.008-1.96 3.07C3.304 8.133 3 9.138 3 10a5 5 0 0 0 10 0c0-1.201-.796-2.157-2.181-3.7l-.03-.032C9.75 5.11 8.5 3.72 7.623 1.82z" />
+                                        <path fill-rule="evenodd"
+                                            d="M4.553 7.776c.82-1.641 1.717-2.753 2.093-3.13l.708.708c-.29.29-1.128 1.311-1.907 2.87z" />
+                                    </svg>
+                                    <div id="humi_text" class="card-text align-content-around justify-content-center  m-1 ">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Repeat the above div for the remaining 3 cards -->
+                </div>
+                <div class="col-lg-6 ">
+                    <div class="card p-1 mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Light</h5>
+                            <div class="card-img ">
+                                <div
+                                    class="feature-icon d-inline-flex align-items-center justify-content-start  bg-gradient fs-2 mb-3">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1.5em" height="1.5em"
+                                        fill="currentColor" class="bi bi-sun" viewBox="0 0 16 16">
+                                        <path
+                                            d="M8 11a3 3 0 1 1 0-6 3 3 0 0 1 0 6m0 1a4 4 0 1 0 0-8 4 4 0 0 0 0 8M8 0a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 0m0 13a.5.5 0 0 1 .5.5v2a.5.5 0 0 1-1 0v-2A.5.5 0 0 1 8 13m8-5a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2a.5.5 0 0 1 .5.5M3 8a.5.5 0 0 1-.5.5h-2a.5.5 0 0 1 0-1h2A.5.5 0 0 1 3 8m10.657-5.657a.5.5 0 0 1 0 .707l-1.414 1.415a.5.5 0 1 1-.707-.708l1.414-1.414a.5.5 0 0 1 .707 0m-9.193 9.193a.5.5 0 0 1 0 .707L3.05 13.657a.5.5 0 0 1-.707-.707l1.414-1.414a.5.5 0 0 1 .707 0m9.193 2.121a.5.5 0 0 1-.707 0l-1.414-1.414a.5.5 0 0 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .707M4.464 4.465a.5.5 0 0 1-.707 0L2.343 3.05a.5.5 0 1 1 .707-.707l1.414 1.414a.5.5 0 0 1 0 .708" />
+                                    </svg>
+                                    <div id="light_text" class="card-text align-content-around justify-content-center m-1 ">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="card p-1 mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Co2</h5>
+                            <div class="card-img ">
+                                <div
+                                    class="feature-icon d-inline-flex align-items-center justify-content-start  bg-gradient fs-2 mb-3">
+                                    <svg fill="#000000" width="1.5em" height="1.5em" fill="currentColor"
+                                        class="bi bi-sun" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg">
+                                        <g>
+                                            <g>
+                                                <path d="M210.842,281.421c-1.92-2.918-4.796-4.873-8.243-5.623l-3.098-0.35c-2.202,0-4.301,0.546-6.4,1.698
+                c-3.226,1.877-5.427,5.077-6.101,8.798c-2.022,9.301-5.726,16.051-10.948,20.028c-4.625,3.473-11.025,5.222-18.953,5.222
+                c-10.453,0-18.5-3.499-24.602-10.65c-6.878-8.098-10.377-20.147-10.377-35.849c0-15.3,3.524-27.298,10.351-35.524
+                c6.349-7.398,14.404-10.999,24.627-10.999c7.902,0,14.404,1.749,19.328,5.222c5.274,3.652,8.55,9.148,10.001,16.529
+                c0.853,5.171,3.627,8.004,5.623,9.301c2.048,1.451,4.429,2.227,6.878,2.227l2.876-0.35c3.354-0.777,6.076-2.603,7.979-5.402
+                c1.954-2.927,2.697-6.246,2.15-9.924c-2.304-12.228-7.723-22.178-16.222-29.602c-9.728-8.328-22.699-12.552-38.596-12.552
+                c-18.022,0-32.802,6.724-43.878,19.977c-11.051,13.047-16.649,30.225-16.649,51.098c0,21.325,5.598,38.622,16.623,51.379
+                c11.051,13.073,25.822,19.703,43.904,19.703c15.872,0,28.877-4.574,38.596-13.525c8.149-7.373,13.798-17.451,16.828-30.003
+                C213.692,287.172,212.216,283.529,210.842,281.421z" />
+                                            </g>
+                                        </g>
+                                        <g>
+                                            <g>
+                                                <path
+                                                    d="M335.369,216.073c-11.341-14.899-27.469-22.451-47.915-22.451c-20.548,0-36.727,7.552-48.128,22.528
+                c-9.549,12.8-14.379,29.15-14.379,48.546c0,19.396,4.821,35.703,14.404,48.427c11.375,15.027,27.554,22.647,48.102,22.647
+                c20.446,0,36.574-7.629,47.898-22.596c9.796-12.723,14.771-29.022,14.771-48.478S345.173,228.873,335.369,216.073z
+                 M315.477,298.197c-6.4,8.849-15.573,13.15-28.023,13.15c-12.527,0-21.7-4.301-27.998-13.099
+                c-5.922-8.303-8.951-19.575-8.951-33.553c0-14.071,3.004-25.353,8.951-33.579c6.298-8.798,15.471-13.099,27.998-13.099
+                c12.45,0,21.623,4.301,28.049,13.15c6.025,8.277,9.071,19.55,9.071,33.527C324.574,278.554,321.502,289.826,315.477,298.197z" />
+                                            </g>
+                                        </g>
+                                        <g>
+                                            <g>
+                                                <path d="M426.991,356.932c-2.458-2.449-5.76-3.797-9.335-3.797h-31.198c2.022-2.372,6.076-5.999,14.404-11.204l2.048-1.451
+                c8.875-5.649,14.498-9.975,17.621-13.602c5.504-6.246,8.277-14.302,8.277-23.902c0-9.096-3.098-16.947-9.199-23.296
+                c-13.551-14.003-39.672-13.901-52.873,0.077c-5.999,6.298-9.054,14.123-9.054,23.228v3.123c0,4.753,1.954,7.902,3.9,10.052
+                c5.052,5.001,14.199,4.676,18.551,0.324c2.799-2.552,4.352-6.101,4.352-10.001v-3.499c0-3.021,1.024-4.471,1.997-5.504
+                c1.024-1.101,2.722-2.372,6.699-2.372c4.053,0,5.854,1.323,6.929,2.449c0.896,0.947,1.929,2.398,1.929,5.427
+                c0,3.524-0.947,6.221-2.901,8.422c-1.229,1.348-4.702,4.471-14.148,10.325c-9.6,5.777-16.853,12.297-21.598,19.422
+                c-5.376,8.124-8.073,17.672-7.979,28.399l0.077,9.523h62.174c3.746,0,7.202-1.527,9.327-3.9c2.423-2.449,3.746-5.649,3.746-9.071
+                C430.737,362.607,429.414,359.356,426.991,356.932z" />
+                                            </g>
+                                        </g>
+                                        <g>
+                                            <g>
+                                                <path d="M426.624,199.851C402.099,119.501,327.671,64,243.2,64c-80.853,0-152.747,50.603-180.326,126.379
+                C23.424,216.653,0,259.977,0,307.2C0,384.828,63.172,448,140.8,448c15.65,0,31.403-2.773,46.822-8.303
+                c44.203,13.474,91.571,10.402,133.547-8.397C340.471,442.249,362.052,448,384,448c70.579,0,128-57.421,128-128
+                C512,265.353,477.978,217.899,426.624,199.851z M384,422.4c-19.396,0-38.477-5.649-55.151-16.375l-6.076-3.9l-6.502,3.174
+                c-38.997,19.2-83.652,22.323-124.996,8.721l-4.378-1.451l-4.275,1.673c-13.824,5.402-27.904,8.149-41.822,8.149
+                C77.278,422.4,25.6,370.722,25.6,307.2c0-39.825,20.429-76.297,54.647-97.579l3.9-2.423l1.476-4.352
+                C108.501,135.1,171.827,89.6,243.2,89.6c75.247,0,141.303,50.825,160.623,123.597l1.852,6.972l6.929,2.022
+                C456.747,235.128,486.4,274.423,486.4,320C486.4,376.474,440.474,422.4,384,422.4z" />
+                                            </g>
+                                        </g>
+                                    </svg>
+                                    <div id="co2_text" class="card-text align-content-end justify-content-end m-1 ">-</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
-    </div>
-    
+    </main>
 
     <script>
+
         var url_ = window.location.href;
-        alert(url_);
         url_ = url_.split('/');
         //print each element of the array
         // url_.forEach(element => {
         //     alert(element);
         // });
-        
+
+
         const deviceId = url_[url_.length - 3];
+
+        fetch('/api/v1/deviceData/temprature/' + deviceId)
+            .then(response => response.json())
+            .then(response => {
+                const temperatureValues = response.data;
+                createChart('Temperature', temperatureValues);
+            });
+
         const temperatureButton = document.getElementById('temperatureButton');
         const moistureButton = document.getElementById('moistureButton');
         const co2Button = document.getElementById('co2Button');
         const lightButton = document.getElementById('lightButton');
         const humidityButton = document.getElementById('humidityButton');
+        const pressureButton = document.getElementById('pressButton');
 
-        
+        const temperatureButton1 = document.getElementById('temperatureButton1');
+        const moistureButton1 = document.getElementById('moistureButton1');
+        const co2Button1 = document.getElementById('co2Button1');
+        const lightButton1 = document.getElementById('lightButton1');
+        const humidityButton1 = document.getElementById('humidityButton1');
+        const pressureButton1 = document.getElementById('pressButton1');
 
-    
+
+
+
+        let chartType = '';
+        // Add event listener to the temperature button
+        temperatureButton1.addEventListener('click', () => {
+            chartType = 'temprature';
+            updateChart();
+        });
+
+        // Add event listener to the moisture button
+        moistureButton1.addEventListener('click', () => {
+            chartType = 'moisture';
+            updateChart();
+        });
+
+        // Add event listener to the humidity button
+        humidityButton1.addEventListener('click', () => {
+            chartType = 'hummidity';
+            updateChart();
+        });
+
+        // Add event listener to the light button
+        lightButton1.addEventListener('click', () => {
+            chartType = 'light';
+            updateChart();
+        });
+
+        // Add event listener to the co2 button
+        co2Button1.addEventListener('click', () => {
+            chartType = 'carbon';
+            updateChart();
+        });
+
+        // Add event listener to the pressure button
+
+        pressureButton1.addEventListener('click', () => {
+            chartType = 'pressure';
+            updateChart();
+        });
+
+
+
+
         // Add event listener to the temperature button
         temperatureButton.addEventListener('click', () => {
-            fetch('/api/v1/deviceData/temprature/' + deviceId)
-                .then(response => response.json())
-                .then(response => {
-                    const temperatureValues = response.data;
-                    createChart('Temperature', temperatureValues);
-                });
+            chartType = 'temprature';
+            updateChart();
         });
-    
+
         // Add event listener to the moisture button
         moistureButton.addEventListener('click', () => {
-            fetch('/api/v1/deviceData/moisture/' + deviceId)
-                .then(response => response.json())
-                .then(response => {
-                    const moistureValues = response.data;
-                    createChart('Moisture', moistureValues);
-                });
+            chartType = 'moisture';
+            updateChart();
         });
 
         // Add event listener to the humidity button
         humidityButton.addEventListener('click', () => {
-            fetch('/api/v1/deviceData/hummidity/' + deviceId)
-                .then(response => response.json())
-                .then(response => {
-                    const humidityValues = response.data;
-                    createChart('Humidity', humidityValues);
-                });
+            chartType = 'hummidity';
+            updateChart();
         });
 
         // Add event listener to the light button
         lightButton.addEventListener('click', () => {
-            fetch('/api/v1/deviceData/light/' + deviceId)
-                .then(response => response.json())
-                .then(response => {
-                    const lightValues = response.data;
-                    createChart('Light', lightValues);
-                });
+            chartType = 'light';
+            updateChart();
         });
 
         // Add event listener to the co2 button
         co2Button.addEventListener('click', () => {
-            fetch('/api/v1/deviceData/carbon/' + deviceId)
-                .then(response => response.json())
-                .then(response => {
-                    const co2Values = response.data;
-                    createChart('Co2', co2Values);
-                });
+            chartType = 'carbon';
+            updateChart();
+        });
+
+        // Add event listener to the pressure button
+        pressureButton.addEventListener('click', () => {
+            chartType = 'pressure';
+            updateChart();
         });
 
 
-    
+
+        function updateChart() {
+            let url = '/api/v1/deviceData/' + chartType + '/' + deviceId;
+            fetch(url)
+                .then(response => response.json())
+                .then(response => {
+                    const values = response.data;
+                    createChart(chartType, values);
+                });
+        }
+
+        setInterval(updateChart, 20000);
+
+
         // Function to create a chart
         let myChart = null; // Initialize chart variable
 
-// Function to create a chart
-function createChart(label, data) {
-    // If a chart already exists, destroy it
-    if (myChart) {
-        myChart.destroy();
-    }
-
-    var ctx = document.getElementById('myChart').getContext('2d');
-    myChart = new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: data,
-            datasets: [{
-                label: label,
-                data: data,
-                backgroundColor: 'rgba(255, 99, 132, 0.2)',
-                borderColor: 'rgba(255, 99, 132, 1)',
-                borderWidth: 1
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-                y: {
-                    beginAtZero: true
-                }
+        // Function to create a chart
+        function createChart(label, data) {
+            // If a chart already exists, destroy it
+            if (myChart) {
+                myChart.destroy();
             }
+
+            // Take the most recent 100 samples
+            const recentData = data.slice(-100);
+
+            var ctx = document.getElementById('myChart').getContext('2d');
+            myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: recentData.map(item => new Date(item.timestamp)),
+                    datasets: [{
+                        label: label,
+                        data: recentData.map(item => item.value),
+                        fill: false,
+                        borderColor: 'rgb(75, 192, 192)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        x: {
+                            type: 'time',
+                            time: {
+                                unit: 'minute'
+                            }
+                        },
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
         }
-    });
-}
+
     </script>
+
+<script>
+    function fetchData() {
+        fetch('/api/v1/deviceData/temprature/' + deviceId)
+            .then(response => response.json())
+            .then(response => {
+                const temperatureValues = response.data[response.data.length-1];
+                document.getElementById('temp_text').innerText = temperatureValues.value;
+            });
+        fetch('/api/v1/deviceData/hummidity/' + deviceId)
+            .then(response => response.json())
+            .then(response => {
+                const humidityValues = response.data[response.data.length-1];
+                document.getElementById('humi_text').innerText = humidityValues.value;
+            });
+        fetch('/api/v1/deviceData/light/' + deviceId)
+            .then(response => response.json())
+            .then(response => {
+                const lightValues = response.data[response.data.length-1];
+                document.getElementById('light_text').innerText = lightValues.value;
+            });
+        fetch('/api/v1/deviceData/carbon/' + deviceId)
+            .then(response => response.json())
+            .then(response => {
+                const co2Values = response.data[response.data.length-1];
+                document.getElementById('co2_text').innerText = co2Values.value;
+            });
+    }
+    fetchData();
+
+    setInterval(fetchData, 20000);
+</script>
+
+    <script>
+        function setSamplingTimes() {
+            // Get form data
+            const formData = new FormData(document.getElementById('setSamplingTimes-form'));
+
+            // Convert form data to JSON object
+            const data = {};
+            formData.forEach((value, key) => {
+                if (value === '' || isNaN(value) || !Number.isInteger(parseFloat(value)) || Number(value) < 0) {
+                    // If empty or not a positive number, set value to 0
+                    if (key.includes('minutes')) {
+                        // For minutes field, set value to 2
+                        data[key] = 0;
+                    }
+                    if (key.includes('seconds')) {
+                        data[key] = 1;// Round up to nearest 30
+                    } 
+                    if (key.includes('hours')) {
+                        data[key] = 0;
+                    } 
+                } else {
+                    if (key.includes('seconds')) {
+                        data[key] = (value >= 30) ? 1 : 0; // Round up to nearest 30
+                    } 
+                    if (key.includes('minutes')) {
+                        data[key] = (value * 60) /30;
+                    }
+                    if (key.includes('hours')) {
+                        data[key] = (value * 3600) /30;
+                    }
+                }
+            });
+
+
+            alert(JSON.stringify(data));
+
+            // Send data to backend using Fetch API
+            fetch(`/${deviceId}/settings`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),
+            })
+                .then(response => {
+                    if (response.ok) {
+                        // Data sent successfully
+                        console.log('Data sent successfully');
+                        // You can perform further actions here, such as showing a success message
+                    } else {
+                        // Error handling
+                        console.error('Error sending data to the backend');
+                        // You can display an error message to the user
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    // Handle network errors or other issues
+                });
+        }
+
+    </script>
+    <script>
+        function setActuatorValues() {
+            // Retrieve the form data
+            const formData = new FormData(document.getElementById('setActuatorValues-form'));
+
+            function handleEmptyValue(value) {
+                return value === '' ? 0 : parseFloat(value);
+            }
+
+            // Convert form data to JSON object
+            const actuatorData = {
+                actuator_1: {
+                    min_temp: handleEmptyValue(formData.get('actuator_1_min_temp')),
+                    max_temp: handleEmptyValue(formData.get('actuator_1_max_temp')),
+                    min_humidity: handleEmptyValue(formData.get('actuator_1_min_humidity')),
+                    max_humidity: handleEmptyValue(formData.get('actuator_1_max_humidity')),
+                    min_pressure: handleEmptyValue(formData.get('actuator_1_min_pressure')),
+                    max_pressure: handleEmptyValue(formData.get('actuator_1_max_pressure')),
+                    min_light: handleEmptyValue(formData.get('actuator_1_min_light')),
+                    max_light: handleEmptyValue(formData.get('actuator_1_max_light')),
+                    min_co2: handleEmptyValue(formData.get('actuator_1_min_co2')),
+                    max_co2: handleEmptyValue(formData.get('actuator_1_max_co2')),
+                    min_moisture: handleEmptyValue(formData.get('actuator_1_min_moisture')),
+                    max_moisture: handleEmptyValue(formData.get('actuator_1_max_moisture'))
+                },
+                actuator_2: {
+                    min_temp: handleEmptyValue(formData.get('actuator_2_min_temp')),
+                    max_temp: handleEmptyValue(formData.get('actuator_2_max_temp')),
+                    min_humidity: handleEmptyValue(formData.get('actuator_2_min_humidity')),
+                    max_humidity: handleEmptyValue(formData.get('actuator_2_max_humidity')),
+                    min_pressure: handleEmptyValue(formData.get('actuator_2_min_pressure')),
+                    max_pressure: handleEmptyValue(formData.get('actuator_2_max_pressure')),
+                    min_light: handleEmptyValue(formData.get('actuator_2_min_light')),
+                    max_light: handleEmptyValue(formData.get('actuator_2_max_light')),
+                    min_co2: handleEmptyValue(formData.get('actuator_2_min_co2')),
+                    max_co2: handleEmptyValue(formData.get('actuator_2_max_co2')),
+                    min_moisture: handleEmptyValue(formData.get('actuator_2_min_moisture')),
+                    max_moisture: handleEmptyValue(formData.get('actuator_2_max_moisture'))
+                },
+                actuator_3: {
+                    min_temp: handleEmptyValue(formData.get('actuator_3_min_temp')),
+                    max_temp: handleEmptyValue(formData.get('actuator_3_max_temp')),
+                    min_humidity: handleEmptyValue(formData.get('actuator_3_min_humidity')),
+                    max_humidity: handleEmptyValue(formData.get('actuator_3_max_humidity')),
+                    min_pressure: handleEmptyValue(formData.get('actuator_3_min_pressure')),
+                    max_pressure: handleEmptyValue(formData.get('actuator_3_max_pressure')),
+                    min_light: handleEmptyValue(formData.get('actuator_3_min_light')),
+                    max_light: handleEmptyValue(formData.get('actuator_3_max_light')),
+                    min_co2: handleEmptyValue(formData.get('actuator_3_min_co2')),
+                    max_co2: handleEmptyValue(formData.get('actuator_3_max_co2')),
+                    min_moisture: handleEmptyValue(formData.get('actuator_3_min_moisture')),
+                    max_moisture: handleEmptyValue(formData.get('actuator_3_max_moisture'))
+                }
+            };
+
+            alert(JSON.stringify(actuatorData));
+
+            // Send the data to the server
+            fetch(`/${deviceId}/settingsActuator`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(actuatorData)
+            })
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Failed to set actuator values');
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    console.log('Actuator values set successfully:', data);
+                })
+                .catch(error => {
+                    console.error('Error setting actuator values:', error);
+                });
+        }
+    </script>
+
+    <div class="modal fade " id="samplingModal" tabindex="-1" aria-labelledby="samplingModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="samplingModalLabel"><strong>Sensor Settings</strong></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="setSamplingTimes-form">
+                        <h3 class="h3 mb-3 fw-normal">Temperature</h3>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="tempSamplingHours"
+                                        placeholder="Temperature Sampling Hours" name="temp_sampling_hours" min="0"
+                                        max="23" step="1">
+                                    <label for="tempSamplingHours">Hours</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="tempSamplingMinutes"
+                                        placeholder="Temperature Sampling Minutes" name="temp_sampling_minutes" min="0"
+                                        max="59" step="1">
+                                    <label for="tempSamplingMinutes">Minutes</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="tempSamplingSeconds"
+                                        placeholder="Temperature Sampling Seconds" name="temp_sampling_seconds" min="0"
+                                        max="59" step="30">
+                                    <label for="tempSamplingSeconds">Seconds</label>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="h3 mb-3 fw-normal">Humidity</h3>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="humiditySamplingHours"
+                                        placeholder="Humidity Sampling Hours" name="humidity_sampling_hours" min="0"
+                                        max="23" step="1">
+                                    <label for="humiditySamplingHours">Hours</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="humiditySamplingMinutes"
+                                        placeholder="Humidity Sampling Minutes" name="humidity_sampling_minutes" min="0"
+                                        max="59" step="1">
+                                    <label for="humiditySamplingMinutes">Minutes</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="humiditySamplingSeconds"
+                                        placeholder="Humidity Sampling Seconds" name="humidity_sampling_seconds" min="0"
+                                        max="59" step="30">
+                                    <label for="humiditySamplingSeconds">Seconds</label>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="h3 mb-3 fw-normal">Light</h3>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="lightSamplingHours"
+                                        placeholder="Light Sampling Hours" name="light_sampling_hours" min="0" max="23"
+                                        step="1">
+                                    <label for="lightSamplingHours">Hours</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="lightSamplingMinutes"
+                                        placeholder="Light Sampling Minutes" name="light_sampling_minutes" min="0"
+                                        max="59" step="1">
+                                    <label for="lightSamplingMinutes">Minutes</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="lightSamplingSeconds"
+                                        placeholder="Light Sampling Seconds" name="light_sampling_seconds" min="0"
+                                        max="59" step="30">
+                                    <label for="lightSamplingSeconds">Seconds</label>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="h3 mb-3 fw-normal">Pressure</h3>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="pressureSamplingHours"
+                                        placeholder="Pressure Sampling Hours" name="pressure_sampling_hours" min="0"
+                                        max="23" step="1">
+                                    <label for="pressureSamplingHours">Hours</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="pressureSamplingMinutes"
+                                        placeholder="Pressure Sampling Minutes" name="pressure_sampling_minutes" min="0"
+                                        max="59" step="1">
+                                    <label for="pressureSamplingMinutes">Minutes</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="pressureSamplingSeconds"
+                                        placeholder="Pressure Sampling Seconds" name="pressure_sampling_seconds" min="0"
+                                        max="59" step="30">
+                                    <label for="pressureSamplingSeconds">Seconds</label>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="h3 mb-3 fw-normal">Carbon</h3>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="carbonSamplingHours"
+                                        placeholder="Carbon Sampling Hours" name="carbon_sampling_hours" min="0"
+                                        max="23">
+                                    <label for="carbonSamplingHours">Hours</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="carbonSamplingMinutes"
+                                        placeholder="Carbon Sampling Minutes" name="carbon_sampling_minutes" min="0"
+                                        max="59" step="1">
+                                    <label for="carbonSamplingMinutes">Minutes</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="carbonSamplingSeconds"
+                                        placeholder="Carbon Sampling Seconds" name="carbon_sampling_seconds" min="0"
+                                        max="59" step="30">
+                                    <label for="carbonSamplingSeconds">Seconds</label>
+                                </div>
+                            </div>
+                        </div>
+                        <h3 class="h3 mb-3 fw-normal">Moisture</h3>
+                        <div class="row">
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="moistureSamplingHours"
+                                        placeholder="Moisture Sampling Hours" name="moisture_sampling_hours" min="0"
+                                        max="23" step="1">
+                                    <label for="moistureSamplingHours">Hours</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="moistureSamplingMinutes"
+                                        placeholder="Moisture Sampling Minutes" name="moisture_sampling_minutes" min="0"
+                                        max="59" step="1">
+                                    <label for="moistureSamplingMinutes">Minutes</label>
+                                </div>
+                            </div>
+                            <div class="col-4">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="moistureSamplingSeconds"
+                                        placeholder="Moisture Sampling Seconds" name="moisture_sampling_seconds" min="0"
+                                        max="59" step="30">
+                                    <label for="moistureSamplingSeconds">Seconds</label>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Repeat for other sensors... -->
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" onclick="setSamplingTimes();"
+                        data-bs-dismiss="modal">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="actuatorModal" tabindex="-1" aria-labelledby="actuatorModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="actuatorModalLabel"><strong>Actuator Settings</strong></h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form method="post" id="setActuatorValues-form">
+
+                        <h3 class="h3 mb-3 fw-normal">Actuator 1</h3>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MinTemp"
+                                        placeholder="Minimum Temperature" name="actuator_1_min_temp" step="0.1">
+                                    <label for="actuator1MinTemp">Minimum Temperature</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MaxTemp"
+                                        placeholder="Maximum Temperature" name="actuator_1_max_temp" step="0.1">
+                                    <label for="actuator1MaxTemp">Maximum Temperature</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MinHumidity"
+                                        placeholder="Minimum Humidity" name="actuator_1_min_humidity" step="0.1">
+                                    <label for="actuator1MinHumidity">Minimum Humidity</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MaxHumidity"
+                                        placeholder="Maximum Humidity" name="actuator_1_max_humidity" step="0.1">
+                                    <label for="actuator1MaxHumidity">Maximum Humidity</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MinPressure"
+                                        placeholder="Minimum Pressure" name="actuator_1_min_pressure" step="0.1">
+                                    <label for="actuator1MinPressure">Minimum Pressure</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MaxPressure"
+                                        placeholder="Maximum Pressure" name="actuator_1_max_pressure" step="0.1">
+                                    <label for="actuator1MaxPressure">Maximum Pressure</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MinLight"
+                                        placeholder="Minimum Light" name="actuator_1_min_light" step="0.1">
+                                    <label for="actuator1MinLight">Minimum Light</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MaxLight"
+                                        placeholder="Maximum Light" name="actuator_1_max_light" step="0.1">
+                                    <label for="actuator1MaxLight">Maximum Light</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MinCo2"
+                                        placeholder="Minimum CO2" name="actuator_1_min_co2" step="0.1">
+                                    <label for="actuator1MinCo2">Minimum CO2</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MaxCo2"
+                                        placeholder="Maximum CO2" name="actuator_1_max_co2" step="0.1">
+                                    <label for="actuator1MaxCo2">Maximum CO2</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MinMoisture"
+                                        placeholder="Minimum Moisture" name="actuator_1_min_moisture" step="0.1">
+                                    <label for="actuator1MinMoisture">Minimum Moisture</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator1MaxMoisture"
+                                        placeholder="Maximum Moisture" name="actuator_1_max_moisture" step="0.1">
+                                    <label for="actuator1MaxMoisture">Maximum Moisture</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <h3 class="h3 mb-3 fw-normal">Actuator 2</h3>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MinTemp"
+                                        placeholder="Minimum Temperature" name="actuator_2_min_temp" step="0.1">
+                                    <label for="actuator2MinTemp">Minimum Temperature</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MaxTemp"
+                                        placeholder="Maximum Temperature" name="actuator_2_max_temp" step="0.1">
+                                    <label for="actuator2MaxTemp">Maximum Temperature</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MinHumidity"
+                                        placeholder="Minimum Humidity" name="actuator_2_min_humidity" step="0.1">
+                                    <label for="actuator2MinHumidity">Minimum Humidity</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MaxHumidity"
+                                        placeholder="Maximum Humidity" name="actuator_2_max_humidity" step="0.1">
+                                    <label for="actuator2MaxHumidity">Maximum Humidity</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MinPressure"
+                                        placeholder="Minimum Pressure" name="actuator_2_min_pressure" step="0.1">
+                                    <label for="actuator2MinPressure">Minimum Pressure</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MaxPressure"
+                                        placeholder="Maximum Pressure" name="actuator_2_max_pressure" step="0.1">
+                                    <label for="actuator2MaxPressure">Maximum Pressure</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MinLight"
+                                        placeholder="Minimum Light" name="actuator_2_min_light" step="0.1">
+                                    <label for="actuator2MinLight">Minimum Light</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MaxLight"
+                                        placeholder="Maximum Light" name="actuator_2_max_light" step="0.1">
+                                    <label for="actuator2MaxLight">Maximum Light</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MinCo2"
+                                        placeholder="Minimum CO2" name="actuator_2_min_co2" step="0.1">
+                                    <label for="actuator2MinCo2">Minimum CO2</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MaxCo2"
+                                        placeholder="Maximum CO2" name="actuator_2_max_co2" step="0.1">
+                                    <label for="actuator2MaxCo2">Maximum CO2</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MinMoisture"
+                                        placeholder="Minimum Moisture" name="actuator_2_min_moisture" step="0.1">
+                                    <label for="actuator2MinMoisture">Minimum Moisture</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator2MaxMoisture"
+                                        placeholder="Maximum Moisture" name="actuator_2_max_moisture" step="0.1">
+                                    <label for="actuator2MaxMoisture">Maximum Moisture</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <h3 class="h3 mb-3 fw-normal">Actuator 3</h3>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MinTemp"
+                                        placeholder="Minimum Temperature" name="actuator_3_min_temp" step="0.1">
+                                    <label for="actuator3MinTemp">Minimum Temperature</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MaxTemp"
+                                        placeholder="Maximum Temperature" name="actuator_3_max_temp" step="0.1">
+                                    <label for="actuator3MaxTemp">Maximum Temperature</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MinHumidity"
+                                        placeholder="Minimum Humidity" name="actuator_3_min_humidity" step="0.1">
+                                    <label for="actuator3MinHumidity">Minimum Humidity</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MaxHumidity"
+                                        placeholder="Maximum Humidity" name="actuator_3_max_humidity" step="0.1">
+                                    <label for="actuator3MaxHumidity">Maximum Humidity</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MinPressure"
+                                        placeholder="Minimum Pressure" name="actuator_3_min_pressure" step="0.1">
+                                    <label for="actuator3MinPressure">Minimum Pressure</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MaxPressure"
+                                        placeholder="Maximum Pressure" name="actuator_3_max_pressure" step="0.1">
+                                    <label for="actuator3MaxPressure">Maximum Pressure</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MinLight"
+                                        placeholder="Minimum Light" name="actuator_3_min_light" step="0.1">
+                                    <label for="actuator3MinLight">Minimum Light</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MaxLight"
+                                        placeholder="Maximum Light" name="actuator_3_max_light" step="0.1">
+                                    <label for="actuator3MaxLight">Maximum Light</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MinCo2"
+                                        placeholder="Minimum CO2" name="actuator_3_min_co2" step="0.1">
+                                    <label for="actuator3MinCo2">Minimum CO2</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MaxCo2"
+                                        placeholder="Maximum CO2" name="actuator_3_max_co2" step="0.1">
+                                    <label for="actuator3MaxCo2">Maximum CO2</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MinMoisture"
+                                        placeholder="Minimum Moisture" name="actuator_3_min_moisture" step="0.1">
+                                    <label for="actuator3MinMoisture">Minimum Moisture</label>
+                                </div>
+                            </div>
+                            <div class="col-6">
+                                <div class="form-floating p-1">
+                                    <input type="number" class="form-control" id="actuator3MaxMoisture"
+                                        placeholder="Maximum Moisture" name="actuator_3_max_moisture" step="0.1">
+                                    <label for="actuator3MaxMoisture">Maximum Moisture</label>
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-success" onclick="setActuatorValues();"
+                        data-bs-dismiss="modal">Submit</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js"
+        integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r"
+        crossorigin="anonymous"></script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js"
+        integrity="sha384-BBtl+eGJRgqQAUMxJ7pMwbEyER4l1g+O15P+16Ep7Q9Q+zqX6gSbd85u4mG4QzX+"
+        crossorigin="anonymous"></script>
 </body>
+
 </html>

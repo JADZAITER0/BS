@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+  <title>AIgRICULTURE - Smart Agriculture IoT</title>
+  <!-- Required meta tags -->
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+
+  <!-- Bootstrap CSS v5.3.2 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+        rel="stylesheet"
+        integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
+        crossorigin="anonymous" />
+  <link rel="stylesheet" href="/assets/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.5.0/font/bootstrap-icons.css">
+
+  <style>
+    html,
+        body {
+        height: 100%;
+        }
+
+        .form-signin {
+        max-width: 330px;
+        padding: 1rem;
+        z-index: 1;
+        }
+
+        .form-signin .form-floating:focus-within {
+        z-index: 2;
+        }
+
+        .form-signin input[type="email"] {
+        margin-bottom: -1px;
+        border-bottom-right-radius: 0;
+        border-bottom-left-radius: 0;
+        }
+
+        .form-signin input[type="password"] {
+        margin-bottom: 10px;
+        border-top-left-radius: 0;
+        border-top-right-radius: 0;
+        }
+        .navbar-brand {
+        font-size: 1.8rem;
+        }
+
+        .navbar-nav .nav-link {
+        font-size: 1.2rem;
+        }
+
+        .error-alert{
+          animation: fadeIn 0.3s ease-in; 
+        }
+
+        @keyframes fadeIn {  
+          from {  
+              opacity:0;  
+          }  
+
+          to {  
+              opacity:1;  
+          }  
+        }
+  </style>
+</head>
+<body>
+    
+<div class="modal fade" id="samplingModal" tabindex="-1" aria-labelledby="samplingModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h1 class="modal-title fs-5" id="samplingModalLabel"><strong>Set Sampling Times</strong></h1>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form method="post" id="setSamplingTimes-form">
+                <div id="error-div" class="container">
+                </div>
+                <h3 class="h3 mb-3 fw-normal">Temperature Sampling Time</h3>
+                <div class="form-floating p-1">
+                  <input type="number" class="form-control" id="tempSamplingTime" placeholder="Temperature Sampling Time" name="temp_sampling_time">
+                  <label for="tempSamplingTime">Temperature Sampling Time</label>
+                </div>
+                <h3 class="h3 mb-3 fw-normal">Humidity Sampling Time</h3>
+                <div class="form-floating p-1">
+                  <input type="number" class="form-control" id="humiditySamplingTime" placeholder="Humidity Sampling Time" name="humidity_sampling_time">
+                  <label for="humiditySamplingTime">Humidity Sampling Time</label>
+                </div>
+                <h3 class="h3 mb-3 fw-normal">Light Sampling Time</h3>
+                <div class="form-floating p-1">
+                  <input type="number" class="form-control" id="lightSamplingTime" placeholder="Light Sampling Time" name="light_sampling_time">
+                  <label for="lightSamplingTime">Light Sampling Time</label>
+                </div>
+                <h3 class="h3 mb-3 fw-normal">Carbon Sampling Time</h3>
+                <div class="form-floating p-1">
+                  <input type="number" class="form-control" id="carbonSamplingTime" placeholder="Carbon Sampling Time" name="carbon_sampling_time">
+                  <label for="carbonSamplingTime">Carbon Sampling Time</label>
+                </div>
+                <h3 class="h3 mb-3 fw-normal">Moisture Sampling Time</h3>
+                <div class="form-floating p-1">
+                  <input type="number" class="form-control" id="moistureSamplingTime" placeholder="Moisture Sampling Time" name="moisture_sampling_time">
+                  <label for="moistureSamplingTime">Moisture Sampling Time</label>
+                </div>
+                <!-- Repeat for other sensors... -->
+            </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="button" class="btn btn-success" onclick="">Submit</button>
+        </div>
+      </div>
+    </div>
+</div>
+<a type="button" class="btn btn-primary p-1" data-bs-toggle="modal" data-bs-target="#samplingModal">Setting</a>
+
+
+</body>
+</html>

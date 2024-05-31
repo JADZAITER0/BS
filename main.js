@@ -107,45 +107,44 @@ app.use(passport.session());
 app.use(routes);
 
 
-app.post('/:id/settings', (req, res) => {
-    const clientToken = req.params.id;
-    const setting= req.body.setting;
+// app.post('/:id/settings', (req, res) => {
+//     const clientToken = req.params.id;
+//     const setting= req.body.setting;
   
-    // Check if the device with the given token is connected
-    if (deviceConnections.has(clientToken)) {
-      const ws = deviceConnections.get(clientToken);
+//     // Check if the device with the given token is connected
+//     if (deviceConnections.has(clientToken)) {
+//       const ws = deviceConnections.get(clientToken);
   
-      // Send the setting change to the connected device
-      ws.send(JSON.stringify({
-        type: 'uwu',
-      }));
+//       // Send the setting change to the connected device
+//       ws.send(JSON.stringify({
+//         type: 'uwu',
+//       }));
   
-      res.status(200).json({ message: 'Setting change request processed successfully.' });
-    } else {
-      res.status(404).json({ error: 'Device not found.' });
-    }
-});
+//       res.status(200).json({ message: 'Setting change request processed successfully.' });
+//     } else {
+//       res.status(404).json({ error: 'Device not found.' });
+//     }
+// });
 
-app.ws('/:id/', function (ws, req) {
-    // Add the new connection to the list
-    console.log(req.socket.remoteAddress);
-    aWss.clients.add(ws);
-    deviceConnections.set(req.params.id, ws);
+// app.ws('/:id/', function (ws, req) {
+//     // Add the new connection to the list
+//     console.log(req.socket.remoteAddress);
+//     aWss.clients.add(ws);
+//     deviceConnections.set(req.params.id, ws);
     
-    ws.on('message', function (msg) {
-        console.log(msg);
+//     ws.on('message', function (msg) {
+//         console.log(msg);
 
         
-    });
-c
-    ws.on('close', function () {
-        console.log("Closed");
-        aWss.clients.delete(ws);
-        deviceConnections.delete(req.params.id);
-    });
+//     });
+//     ws.on('close', function () {
+//         console.log("Closed");
+//         aWss.clients.delete(ws);
+//         deviceConnections.delete(req.params.id);
+//     });
 
 
-});
+// });
 
 
 /**
@@ -153,8 +152,8 @@ c
  */
 
 // Server listens on http://192.168.1.5:3000
-app.listen(3002,'127.0.0.1',() => {
-    console.log('Server listening on http://127.0.0.1:3002');
+app.listen(3002,'172.16.25.227',() => {
+    console.log('Server listening on http://172.16.25.227:3002');
 });
 
 

@@ -40,6 +40,24 @@ const register = async (req, res, next) => {
        
 }
 
+const isAuthenticated = (req, res, next) => {
+    if (req.isAuthenticated()){
+        next();
+    }else{
+        //render the not authenticated page
+        res.render('../templates/notAuthenticated');
+        
+    }
+};
+
+const userConnectedToDevice = async (req, res, next) => {
+    if (userService.isDeviceAllreadyLinked(req.params.id, req.user.username)){
+        next();
+    }else{
+        res.status(404).json({errorMessage: "Device not linked to user"});
+    }
+}
+
 
 const validUser = async (req, res, next) =>{
     try{
@@ -67,4 +85,6 @@ module.exports = {
     register,
     login,
     validUser,
+    isAuthenticated,
+    userConnectedToDevice
 }
